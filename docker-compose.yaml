@@ -1,0 +1,47 @@
+name: next-starter-kit
+
+services:
+  mailpit:
+    container_name: next-starter-kit-mailpit
+    image: docker.io/axllent/mailpit
+    restart: unless-stopped
+    volumes:
+      - mailpitdata:/data
+    ports:
+      - "8025:8025"
+      - "1025:1025"
+    environment:
+      MP_MAX_MESSAGES: 5000
+      MP_DATABASE: /data/mailpit.db
+      MP_SMTP_AUTH_ACCEPT_ANY: 1
+      MP_SMTP_AUTH_ALLOW_INSECURE: 1
+    networks:
+      - next-starter-kit-network
+
+  postgres:
+    container_name: next-starter-kit-postgres
+    image: docker.io/postgres:15-alpine
+    ports:
+      - "5432:5432"
+    env_file:
+      - .env
+    restart: always
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    networks:
+      - next-starter-kit-network
+    healthcheck:
+      test: pg_isready -U postgres -h localhost
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+volumes:
+  mailpitdata:
+    name: next-starter-kit-mailpitdata
+  pgdata:
+    name: next-starter-kit-pgdata
+
+networks:
+  next-starter-kit-network:
+    name: next-starter-kit-network

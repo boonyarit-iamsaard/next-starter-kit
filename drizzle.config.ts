@@ -8,7 +8,6 @@ const config = {
   dbCredentials: {
     url: env.DATABASE_URL,
   },
-  tablesFilter: ["next-starter-kit_*"],
 } satisfies Config;
 
 export default config;
