@@ -2,7 +2,7 @@ import { type Config } from "drizzle-kit";
 
 import { env } from "~/env";
 
-export default {
+const config = {
   schema: "./src/server/db/schema.ts",
   dialect: "postgresql",
   dbCredentials: {
@@ -10,3 +10,5 @@ export default {
   },
   tablesFilter: ["next-starter-kit_*"],
 } satisfies Config;
+
+export default config;
