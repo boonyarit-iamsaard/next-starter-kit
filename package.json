@@ -1,5 +1,9 @@
 {
   "name": "next-starter-kit",
+  "author": {
+    "email": "boonyarit.iamsaard@gmail.com",
+    "name": "Boonyarit Iamsa-ard"
+  },
   "version": "0.1.0",
   "private": true,
   "type": "module",
