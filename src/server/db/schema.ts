@@ -1,84 +1,104 @@
+import { randomUUID } from "node:crypto";
+
 import { pgTable } from "drizzle-orm/pg-core";
 
-export const user = pgTable("users", (d) => ({
-  id: d.text().primaryKey(),
-  name: d.text().notNull(),
-  email: d.text().notNull().unique(),
-  emailVerified: d
+export const user = pgTable("users", (t) => ({
+  id: t
+    .text()
+    .$defaultFn(() => randomUUID())
+    .primaryKey(),
+  name: t.text().notNull(),
+  email: t.text().notNull().unique(),
+  emailVerified: t
     .boolean("email_verified")
     .$defaultFn(() => false)
     .notNull(),
-  image: d.text(),
-  createdAt: d
+  image: t.text(),
+  createdAt: t
     .timestamp("created_at", { mode: "date", withTimezone: true })
     .$defaultFn(() => new Date())
     .notNull(),
-  updatedAt: d
+  updatedAt: t
     .timestamp("updated_at", { mode: "date", withTimezone: true })
-    .$defaultFn(() => new Date())
+    .$onUpdateFn(() => new Date())
     .notNull(),
 }));
 
-export const session = pgTable("sessions", (d) => ({
-  id: d.text().primaryKey(),
-  expiresAt: d
+export const session = pgTable("sessions", (t) => ({
+  id: t
+    .text()
+    .$defaultFn(() => randomUUID())
+    .primaryKey(),
+  expiresAt: t
     .timestamp("expires_at", { mode: "date", withTimezone: true })
     .notNull(),
-  token: d.text().notNull().unique(),
-  createdAt: d
+  token: t.text().unique().notNull(),
+  createdAt: t
     .timestamp("created_at", { mode: "date", withTimezone: true })
+    .$defaultFn(() => new Date())
     .notNull(),
-  updatedAt: d
+  updatedAt: t
     .timestamp("updated_at", { mode: "date", withTimezone: true })
+    .$onUpdateFn(() => new Date())
     .notNull(),
-  ipAddress: d.text("ip_address"),
-  userAgent: d.text("user_agent"),
-  userId: d
+  ipAddress: t.text("ip_address"),
+  userAgent: t.text("user_agent"),
+  userId: t
     .text("user_id")
     .notNull()
     .references(() => user.id, { onDelete: "cascade" }),
 }));
 
-export const account = pgTable("accounts", (d) => ({
-  id: d.text().primaryKey(),
-  accountId: d.text("account_id").notNull(),
-  providerId: d.text("provider_id").notNull(),
-  userId: d
+export const account = pgTable("accounts", (t) => ({
+  id: t
+    .text()
+    .$defaultFn(() => randomUUID())
+    .primaryKey(),
+  accountId: t.text("account_id").notNull(),
+  providerId: t.text("provider_id").notNull(),
+  userId: t
     .text("user_id")
     .notNull()
     .references(() => user.id, { onDelete: "cascade" }),
-  accessToken: d.text("access_token"),
-  refreshToken: d.text("refresh_token"),
-  idToken: d.text("id_token"),
-  accessTokenExpiresAt: d.timestamp("access_token_expires_at", {
+  accessToken: t.text("access_token"),
+  refreshToken: t.text("refresh_token"),
+  idToken: t.text("id_token"),
+  accessTokenExpiresAt: t.timestamp("access_token_expires_at", {
     mode: "date",
     withTimezone: true,
   }),
-  refreshTokenExpiresAt: d.timestamp("refresh_token_expires_at", {
+  refreshTokenExpiresAt: t.timestamp("refresh_token_expires_at", {
     mode: "date",
     withTimezone: true,
   }),
-  scope: d.text(),
-  password: d.text(),
-  createdAt: d
+  scope: t.text(),
+  password: t.text(),
+  createdAt: t
     .timestamp("created_at", { mode: "date", withTimezone: true })
+    .$defaultFn(() => new Date())
     .notNull(),
-  updatedAt: d
+  updatedAt: t
     .timestamp("updated_at", { mode: "date", withTimezone: true })
+    .$onUpdateFn(() => new Date())
     .notNull(),
 }));
 
-export const verification = pgTable("verifications", (d) => ({
-  id: d.text().primaryKey(),
-  identifier: d.text().notNull(),
-  value: d.text().notNull(),
-  expiresAt: d
+export const verification = pgTable("verifications", (t) => ({
+  id: t
+    .text()
+    .$defaultFn(() => randomUUID())
+    .primaryKey(),
+  identifier: t.text().notNull(),
+  value: t.text().notNull(),
+  expiresAt: t
     .timestamp("expires_at", { mode: "date", withTimezone: true })
     .notNull(),
-  createdAt: d
+  createdAt: t
     .timestamp("created_at", { mode: "date", withTimezone: true })
-    .$defaultFn(() => new Date()),
-  updatedAt: d
+    .$defaultFn(() => new Date())
+    .notNull(),
+  updatedAt: t
     .timestamp("updated_at", { mode: "date", withTimezone: true })
-    .$defaultFn(() => new Date()),
+    .$onUpdateFn(() => new Date())
+    .notNull(),
 }));
