@@ -2,7 +2,7 @@ import {
   createCallerFactory,
   createTRPCRouter,
   publicProcedure,
-} from "~/server/api/trpc";
+} from "~/core/api/trpc";
 
 /**
  * This is the primary router for your server.
