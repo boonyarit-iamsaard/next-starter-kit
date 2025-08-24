@@ -37,6 +37,7 @@ This is a Next.js 15 starter kit built with the T3 stack pattern, featuring:
 - **Next.js 15** with App Router and React Server Components
 - **tRPC** for type-safe API calls
 - **Drizzle ORM** with PostgreSQL database
+- **Better Auth** for authentication with email/password and OAuth
 - **TailwindCSS** for styling
 - **TypeScript** with strict type checking
 
@@ -52,6 +53,9 @@ src/
 │   ├── api/               # tRPC router and context
 │   │   ├── root.ts        # Main app router
 │   │   └── trpc.ts        # tRPC setup
+│   ├── auth/              # Better Auth configuration
+│   │   ├── index.ts       # Auth setup and config
+│   │   └── client.ts      # Client-side auth utilities
 │   └── database/          # Database configuration
 │       ├── index.ts       # Database client
 │       └── schema.ts      # Drizzle schema definitions
@@ -68,19 +72,21 @@ src/
 ### Key Design Patterns
 
 1. **Type-safe API**: All API calls use tRPC for end-to-end type safety
-2. **Database Schema**: Uses Drizzle ORM with PostgreSQL, includes authentication tables (users, sessions, accounts, verifications)
-3. **Environment Management**: Strict environment variable validation with @t3-oss/env-nextjs
-4. **Server Components**: Leverages React Server Components for optimal performance
-5. **Monorepo Structure**: Core logic separated from UI components for better maintainability
+2. **Database Schema**: Uses Drizzle ORM with PostgreSQL, includes Better Auth tables (users, sessions, accounts, verifications)
+3. **Authentication**: Better Auth handles email/password and OAuth (Google) authentication
+4. **Environment Management**: Strict environment variable validation with @t3-oss/env-nextjs
+5. **Server Components**: Leverages React Server Components for optimal performance
+6. **Feature-based Organization**: Core infrastructure, domain features, and shared utilities for better maintainability
 
-### Authentication Schema
+### Better Auth Setup
 
-The database includes a complete authentication system with:
+The authentication system uses Better Auth with:
 
-- `users` table with email verification support
-- `sessions` table for session management
-- `accounts` table for OAuth provider accounts
-- `verifications` table for email/phone verification
+- **Email/Password**: Enabled with 8-128 character password requirements
+- **OAuth**: Google provider configured
+- **Database**: Drizzle adapter with PostgreSQL tables (users, sessions, accounts, verifications)
+- **Session Management**: Cookie-based sessions with Next.js integration
+- **Configuration**: Located in `src/core/auth/index.ts`
 
 ### tRPC Setup
 
