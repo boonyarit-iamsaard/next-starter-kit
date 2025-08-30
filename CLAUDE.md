@@ -26,6 +26,7 @@ This project uses pnpm as the package manager.
 - `pnpm db:generate` - Generate Drizzle schema
 - `pnpm db:migrate` - Run database migrations
 - `pnpm db:push` - Push schema to database
+- `pnpm db:reset` - Reset database (clear all data) using drizzle-seed
 - `pnpm db:studio` - Launch Drizzle Studio
 
 ## Architecture Overview
@@ -46,7 +47,13 @@ This is a Next.js 15 starter kit built with the T3 stack pattern, featuring:
 ```text
 src/
 ├── app/                    # Next.js App Router pages
-│   ├── api/trpc/          # tRPC API routes
+│   ├── (auth)/            # Route group for authentication
+│   │   ├── layout.tsx     # Shared auth layout
+│   │   ├── sign-in/       # /sign-in route
+│   │   └── create-account/ # /create-account route
+│   ├── api/
+│   │   ├── auth/[...all]/ # Better Auth API routes
+│   │   └── trpc/[trpc]/   # tRPC API routes
 │   ├── layout.tsx         # Root layout
 │   └── page.tsx           # Home page
 ├── core/                  # Core business logic
@@ -58,9 +65,16 @@ src/
 │   │   └── client.ts      # Client-side auth utilities
 │   └── database/          # Database configuration
 │       ├── index.ts       # Database client
+│       ├── reset.ts       # Database reset script
 │       └── schema.ts      # Drizzle schema definitions
+├── features/              # Feature-specific components
+│   └── auth/              # Authentication feature
+│       ├── components/    # Auth UI components
+│       └── hooks/         # Auth custom hooks
 ├── common/                # Shared components and utilities
-│   ├── components/ui/     # Reusable UI components
+│   ├── components/
+│   │   ├── ui/            # Reusable UI components
+│   │   └── layouts/       # Layout components
 │   └── helpers/           # Utility functions
 ├── trpc/                  # tRPC client configuration
 │   ├── query-client.ts    # React Query client
@@ -71,12 +85,36 @@ src/
 
 ### Key Design Patterns
 
-1. **Type-safe API**: All API calls use tRPC for end-to-end type safety
-2. **Database Schema**: Uses Drizzle ORM with PostgreSQL, includes Better Auth tables (users, sessions, accounts, verifications)
-3. **Authentication**: Better Auth handles email/password and OAuth (Google) authentication
-4. **Environment Management**: Strict environment variable validation with @t3-oss/env-nextjs
-5. **Server Components**: Leverages React Server Components for optimal performance
-6. **Feature-based Organization**: Core infrastructure, domain features, and shared utilities for better maintainability
+1. **Route Groups**: Authentication pages use `(auth)` route group for shared layout and organization
+2. **Feature-based Architecture**: Components organized by domain (e.g., `features/auth/`) for better maintainability
+3. **Type-safe API**: All API calls use tRPC for end-to-end type safety
+4. **Database Schema**: Uses Drizzle ORM with PostgreSQL, includes Better Auth tables (users, sessions, accounts, verifications)
+5. **Authentication**: Better Auth handles email/password and OAuth (Google) authentication with modern UX standards
+6. **Environment Management**: Strict environment variable validation with @t3-oss/env-nextjs
+7. **Server Components**: Leverages React Server Components for optimal performance
+
+### Authentication Architecture
+
+The authentication system follows modern UX/UI best practices:
+
+**Components & Hooks:**
+
+- `SignInForm` component with `useSignInForm` hook (`/sign-in` route)
+- `CreateAccountForm` component with `useCreateAccountForm` hook (`/create-account` route)
+- Shared `AuthLayout` applied via route group layout
+
+**Terminology Standards:**
+
+- Uses "Sign In" / "Create Account" instead of "Login" / "Register"
+- Consistent button capitalization (Title Case for actions)
+- Cross-referencing navigation between forms
+
+**Technical Implementation:**
+
+- Better Auth with email/password and Google OAuth
+- Client-side navigation with Next.js `useRouter`
+- Form validation with react-hook-form and Zod
+- Database integration via Drizzle ORM PostgreSQL adapter
 
 ### Better Auth Setup
 
@@ -97,10 +135,12 @@ The authentication system uses Better Auth with:
 
 ## Important Notes
 
-- Always run `pnpm check` before committing changes
+- **ALWAYS run `pnpm check` after making any code changes and fix any issues before proceeding**
 - Database schema changes require running `pnpm db:generate` and `pnpm db:push`
 - Environment variables are strictly validated - check `src/env.ts` for required variables
 - Uses server-only imports where appropriate to prevent client-side execution
+- Database reset script uses dotenvx to load environment variables automatically
+- Authentication follows modern UX/UI standards for terminology and user experience
 
 ## Code Style Guidelines
 

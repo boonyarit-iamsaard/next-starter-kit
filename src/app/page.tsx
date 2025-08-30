@@ -18,10 +18,10 @@ async function UserInfo() {
         </h1>
         <div className="grid w-32 gap-4">
           <Button asChild>
-            <Link href="/login">Sign In</Link>
+            <Link href="/sign-in">Sign In</Link>
           </Button>
           <Button variant="outline" asChild>
-            <Link href="/register">Sign Up</Link>
+            <Link href="/create-account">Create Account</Link>
           </Button>
         </div>
       </div>

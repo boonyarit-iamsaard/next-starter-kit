@@ -1,10 +1,6 @@
 "use client";
 
-import { zodResolver } from "@hookform/resolvers/zod";
 import Link from "next/link";
-import { useState } from "react";
-import { useForm } from "react-hook-form";
-import z from "zod";
 
 import { Button } from "~/common/components/ui/button";
 import {
@@ -16,88 +12,48 @@ import {
   FormMessage,
 } from "~/common/components/ui/form";
 import { Input } from "~/common/components/ui/input";
-import { signIn } from "~/core/auth/client";
-import { env } from "~/env";
+import { useCreateAccountForm } from "~/features/auth/hooks/use-create-account-form";
 
-const loginSchema = z.object({
-  email: z.string().email("Please enter a valid email address"),
-  password: z.string().min(8, "Password must be at least 8 characters long"),
-});
-
-type LoginFormData = z.infer<typeof loginSchema>;
-
-export function LoginForm() {
-  const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
-
-  const form = useForm<LoginFormData>({
-    resolver: zodResolver(loginSchema),
-    defaultValues: {
-      email: "",
-      password: "",
-    },
-  });
-
-  async function onSubmit(data: LoginFormData) {
-    setIsLoading(true);
-    setError(null);
-
-    try {
-      const response = await signIn.email({
-        email: data.email,
-        password: data.password,
-        callbackURL: env.NEXT_PUBLIC_APP_URL,
-      });
-
-      if (response.error) {
-        setError(
-          response.error.message ?? "Unable to sign in. Please try again.",
-        );
-      }
-    } catch (err) {
-      setError(
-        err instanceof Error
-          ? err.message
-          : "Unable to sign in. Please check your credentials and try again.",
-      );
-    } finally {
-      setIsLoading(false);
-    }
-  }
-
-  async function handleGoogleSignIn() {
-    setIsLoading(true);
-    setError(null);
-
-    try {
-      await signIn.social({
-        provider: "google",
-        callbackURL: env.NEXT_PUBLIC_APP_URL,
-      });
-    } catch (err) {
-      setError(
-        err instanceof Error
-          ? err.message
-          : "Google sign-in failed. Please try again.",
-      );
-    } finally {
-      setIsLoading(false);
-    }
-  }
+export function CreateAccountForm() {
+  const {
+    form,
+    isLoading,
+    error,
+    handleEmailCreateAccount,
+    handleGoogleCreateAccount,
+  } = useCreateAccountForm();
 
   return (
     <Form {...form}>
       <form
-        onSubmit={form.handleSubmit(onSubmit)}
+        onSubmit={form.handleSubmit(handleEmailCreateAccount)}
         className="flex flex-col gap-6"
       >
         <div className="flex flex-col items-center gap-2 text-center">
-          <h1 className="text-2xl font-bold">Welcome back</h1>
+          <h1 className="text-2xl font-bold">Create account</h1>
           <p className="text-muted-foreground text-sm text-balance">
-            Sign in to your account to continue
+            Join us today - it only takes a minute
           </p>
         </div>
         <div className="grid gap-6">
+          <FormField
+            control={form.control}
+            name="name"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Full name</FormLabel>
+                <FormControl>
+                  <Input
+                    type="text"
+                    placeholder="Enter your full name"
+                    {...field}
+                  />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+
           <FormField
             control={form.control}
             name="email"
@@ -125,7 +81,7 @@ export function LoginForm() {
                 <FormControl>
                   <Input
                     type="password"
-                    placeholder="Enter your password"
+                    placeholder="Create a secure password"
                     {...field}
                   />
                 </FormControl>
@@ -135,21 +91,21 @@ export function LoginForm() {
           />
 
           <Button type="submit" className="w-full" disabled={isLoading}>
-            {isLoading ? "Signing in..." : "Sign in"}
+            {isLoading ? "Creating account..." : "Create Account"}
           </Button>
           <div className="after:border-border relative text-center text-sm after:absolute after:inset-0 after:top-1/2 after:z-0 after:flex after:items-center after:border-t">
             <span className="bg-background text-muted-foreground relative z-10 px-2">
-              Or sign in with
+              Or create account with
             </span>
           </div>
 
           <Button
             variant="outline"
             className="w-full"
-            onClick={handleGoogleSignIn}
+            onClick={handleGoogleCreateAccount}
             disabled={isLoading}
           >
-            {isLoading ? "Signing in..." : "Sign in with Google"}
+            {isLoading ? "Creating account..." : "Create Account with Google"}
           </Button>
         </div>
 
@@ -160,12 +116,12 @@ export function LoginForm() {
         )}
 
         <div className="text-center text-sm">
-          Don&apos;t have an account?{" "}
+          Already have an account?{" "}
           <Link
-            href="/register"
+            href="/sign-in"
             className="hover:text-primary font-medium underline underline-offset-4"
           >
-            Create one here
+            Sign In
           </Link>
         </div>
       </form>
