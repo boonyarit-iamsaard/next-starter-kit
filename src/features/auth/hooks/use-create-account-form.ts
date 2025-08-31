@@ -4,6 +4,7 @@ import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 
+import type { AuthProvider } from "~/core/auth";
 import { signIn, signUp } from "~/core/auth/client";
 import { env } from "~/env";
 
@@ -17,7 +18,7 @@ export type CreateAccountFormData = z.infer<typeof createAccountSchema>;
 
 export function useCreateAccountForm() {
   const router = useRouter();
-  const [isLoading, setIsLoading] = useState(false);
+  const [loadingAction, setLoadingAction] = useState<AuthProvider | null>(null);
   const [error, setError] = useState<string | null>(null);
 
   const form = useForm<CreateAccountFormData>({
@@ -30,7 +31,7 @@ export function useCreateAccountForm() {
   });
 
   async function handleEmailCreateAccount(data: CreateAccountFormData) {
-    setIsLoading(true);
+    setLoadingAction("credential");
     setError(null);
 
     try {
@@ -56,12 +57,12 @@ export function useCreateAccountForm() {
           : "Unable to create account. Please check your details and try again.",
       );
     } finally {
-      setIsLoading(false);
+      setLoadingAction(null);
     }
   }
 
   async function handleGoogleCreateAccount() {
-    setIsLoading(true);
+    setLoadingAction("google");
     setError(null);
 
     try {
@@ -82,14 +83,14 @@ export function useCreateAccountForm() {
           : "Google account creation failed. Please try again.",
       );
     } finally {
-      setIsLoading(false);
+      setLoadingAction(null);
     }
   }
 
   return {
-    form,
-    isLoading,
     error,
+    form,
+    loadingAction,
     handleEmailCreateAccount,
     handleGoogleCreateAccount,
   };

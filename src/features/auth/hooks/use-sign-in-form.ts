@@ -4,6 +4,7 @@ import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 
+import type { AuthProvider } from "~/core/auth";
 import { signIn } from "~/core/auth/client";
 import { env } from "~/env";
 
@@ -16,7 +17,7 @@ export type SignInFormData = z.infer<typeof signInSchema>;
 
 export function useSignInForm() {
   const router = useRouter();
-  const [isLoading, setIsLoading] = useState(false);
+  const [loadingAction, setLoadingAction] = useState<AuthProvider | null>(null);
   const [error, setError] = useState<string | null>(null);
 
   const form = useForm<SignInFormData>({
@@ -28,7 +29,7 @@ export function useSignInForm() {
   });
 
   async function handleEmailSignIn(data: SignInFormData) {
-    setIsLoading(true);
+    setLoadingAction("credential");
     setError(null);
 
     try {
@@ -52,12 +53,12 @@ export function useSignInForm() {
           : "Unable to sign in. Please check your credentials and try again.",
       );
     } finally {
-      setIsLoading(false);
+      setLoadingAction(null);
     }
   }
 
   async function handleGoogleSignIn() {
-    setIsLoading(true);
+    setLoadingAction("google");
     setError(null);
 
     try {
@@ -77,14 +78,14 @@ export function useSignInForm() {
           : "Google sign-in failed. Please try again.",
       );
     } finally {
-      setIsLoading(false);
+      setLoadingAction(null);
     }
   }
 
   return {
-    form,
-    isLoading,
     error,
+    form,
+    loadingAction,
     handleEmailSignIn,
     handleGoogleSignIn,
   };

@@ -17,7 +17,7 @@ import { useCreateAccountForm } from "~/features/auth/hooks/use-create-account-f
 export function CreateAccountForm() {
   const {
     form,
-    isLoading,
+    loadingAction,
     error,
     handleEmailCreateAccount,
     handleGoogleCreateAccount,
@@ -90,8 +90,14 @@ export function CreateAccountForm() {
             )}
           />
 
-          <Button type="submit" className="w-full" disabled={isLoading}>
-            {isLoading ? "Creating account..." : "Create Account"}
+          <Button
+            type="submit"
+            className="w-full"
+            disabled={loadingAction !== null}
+          >
+            {loadingAction === "credential"
+              ? "Creating account..."
+              : "Create Account"}
           </Button>
           <div className="after:border-border relative text-center text-sm after:absolute after:inset-0 after:top-1/2 after:z-0 after:flex after:items-center after:border-t">
             <span className="bg-background text-muted-foreground relative z-10 px-2">
@@ -103,9 +109,11 @@ export function CreateAccountForm() {
             variant="outline"
             className="w-full"
             onClick={handleGoogleCreateAccount}
-            disabled={isLoading}
+            disabled={loadingAction !== null}
           >
-            {isLoading ? "Creating account..." : "Create Account with Google"}
+            {loadingAction === "google"
+              ? "Creating account..."
+              : "Create Account with Google"}
           </Button>
         </div>
 
