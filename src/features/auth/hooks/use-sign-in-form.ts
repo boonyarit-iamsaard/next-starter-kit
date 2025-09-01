@@ -1,12 +1,11 @@
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 
 import type { AuthProvider } from "~/core/auth";
 import { signIn } from "~/core/auth/client";
-import { env } from "~/env";
 
 const signInSchema = z.object({
   email: z.string().email("Please enter a valid email address"),
@@ -17,6 +16,7 @@ export type SignInFormData = z.infer<typeof signInSchema>;
 
 export function useSignInForm() {
   const router = useRouter();
+  const searchParams = useSearchParams();
   const [loadingAction, setLoadingAction] = useState<AuthProvider | null>(null);
   const [error, setError] = useState<string | null>(null);
 
@@ -37,15 +37,16 @@ export function useSignInForm() {
         email: data.email,
         password: data.password,
       });
-
       if (response.error) {
         setError(
           response.error.message ?? "Unable to sign in. Please try again.",
         );
-      } else {
-        router.push("/");
+
         return;
       }
+
+      const redirectTo = searchParams.get("from") ?? "/dashboard";
+      router.push(redirectTo);
     } catch (err) {
       setError(
         err instanceof Error
@@ -62,9 +63,10 @@ export function useSignInForm() {
     setError(null);
 
     try {
+      const redirectTo = searchParams.get("from") ?? "/dashboard";
       const response = await signIn.social({
         provider: "google",
-        callbackURL: env.NEXT_PUBLIC_APP_URL,
+        callbackURL: redirectTo,
       });
       if (response.error) {
         setError(
