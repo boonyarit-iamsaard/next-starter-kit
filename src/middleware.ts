@@ -8,9 +8,11 @@ const authRoutes = ["/sign-in", "/create-account"];
 export async function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
 
-  const isAuthRoute = authRoutes.some((route) => pathname.startsWith(route));
-  const isProtectedRoute = protectedRoutes.some((route) =>
-    pathname.startsWith(route),
+  const isAuthRoute = authRoutes.some(
+    (route) => pathname === route || pathname.startsWith(`${route}/`),
+  );
+  const isProtectedRoute = protectedRoutes.some(
+    (route) => pathname === route || pathname.startsWith(`${route}/`),
   );
 
   if (!isProtectedRoute && !isAuthRoute) {
@@ -18,26 +20,20 @@ export async function middleware(request: NextRequest) {
   }
 
   const sessionCookie = getSessionCookie(request);
-  if (isProtectedRoute) {
-    if (!sessionCookie) {
-      const signInUrl = new URL("/sign-in", request.url);
-      signInUrl.searchParams.set("from", pathname);
 
-      return NextResponse.redirect(signInUrl);
-    }
+  if (isAuthRoute && sessionCookie) {
+    // TODO: ensure 'from' is safe and valid relative path
+    const from = request.nextUrl.searchParams.get("from");
+    const redirectTo = new URL(from ?? "/dashboard", request.url);
 
-    return NextResponse.next();
+    return NextResponse.redirect(redirectTo);
   }
 
-  if (isAuthRoute) {
-    if (sessionCookie) {
-      const redirectTo =
-        request.nextUrl.searchParams.get("from") ?? "/dashboard";
+  if (isProtectedRoute && !sessionCookie) {
+    const signInUrl = new URL("/sign-in", request.url);
+    signInUrl.searchParams.set("from", pathname);
 
-      return NextResponse.redirect(new URL(redirectTo, request.url));
-    }
-
-    return NextResponse.next();
+    return NextResponse.redirect(signInUrl);
   }
 
   return NextResponse.next();
