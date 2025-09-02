@@ -1,10 +1,26 @@
-import { LayoutDashboard } from "lucide-react";
-import { headers } from "next/headers";
-import Link from "next/link";
+"use client";
 
+import { LayoutDashboard } from "lucide-react";
+import Link from "next/link";
+import { usePathname } from "next/navigation";
+
+import { Avatar, AvatarFallback } from "~/common/components/ui/avatar";
 import { Button } from "~/common/components/ui/button";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuTrigger,
+} from "~/common/components/ui/dropdown-menu";
+import {
+  NavigationMenu,
+  NavigationMenuItem,
+  NavigationMenuList,
+  navigationMenuTriggerStyle,
+} from "~/common/components/ui/navigation-menu";
+import { UserMenuContent } from "~/common/components/user-menu-content";
+import { cn } from "~/common/helpers/cn";
 import type { NavItem } from "~/common/types/navigation";
-import { auth } from "~/core/auth";
+import { authClient } from "~/core/auth/client";
 import { env } from "~/env";
 
 const mainNavItems: NavItem[] = [
@@ -15,10 +31,12 @@ const mainNavItems: NavItem[] = [
   },
 ];
 
-export async function AppHeader() {
-  const session = await auth.api.getSession({
-    headers: await headers(),
-  });
+const activeItemStyles =
+  "text-neutral-900 dark:bg-neutral-800 dark:text-neutral-100";
+
+export function AppHeader() {
+  const pathname = usePathname();
+  const { data: session } = authClient.useSession();
 
   return (
     <div className="border-sidebar-border/80 border-b">
@@ -31,42 +49,52 @@ export async function AppHeader() {
         </Link>
 
         <div className="ml-6 hidden h-full items-center space-x-6 lg:flex">
-          <nav className="flex h-full items-stretch">
-            <ul className="flex h-full items-stretch space-x-2">
+          <NavigationMenu className="flex h-full items-stretch">
+            <NavigationMenuList className="flex h-full items-stretch space-x-2">
               {mainNavItems.map((item, index) => (
-                <li key={index} className="relative flex h-full items-center">
+                <NavigationMenuItem
+                  key={index}
+                  className="relative flex h-full items-center"
+                >
                   <Link
                     href={item.href}
-                    className="text-foreground hover:bg-accent hover:text-accent-foreground flex h-9 cursor-pointer items-center px-3 text-sm font-medium"
+                    className={cn(
+                      navigationMenuTriggerStyle(),
+                      pathname === item.href && activeItemStyles,
+                      "h-9 cursor-pointer px-3",
+                    )}
                   >
                     {item.icon && <item.icon className="mr-2 h-4 w-4" />}
                     {item.title}
                   </Link>
-                </li>
+                  {pathname === item.href && (
+                    <div className="absolute bottom-0 left-0 h-0.5 w-full translate-y-px bg-black dark:bg-white"></div>
+                  )}
+                </NavigationMenuItem>
               ))}
-            </ul>
-          </nav>
+            </NavigationMenuList>
+          </NavigationMenu>
         </div>
 
         <div className="ml-auto flex items-center space-x-2">
+          {/* TODO: add loading skeleton */}
           {session ? (
-            <div className="flex items-center gap-2">
-              <span className="text-muted-foreground text-sm">
-                {session.user.name}
-              </span>
-              <form
-                action={async () => {
-                  "use server";
-                  await auth.api.signOut({
-                    headers: await headers(),
-                  });
-                }}
-              >
-                <Button type="submit" variant="ghost">
-                  Sign Out
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button variant="ghost" className="size-10 rounded-full p-1">
+                  <Avatar className="size-8 overflow-hidden rounded-full">
+                    {/* TODO: add avatar image */}
+                    <AvatarFallback className="rounded-lg bg-neutral-200 text-black dark:bg-neutral-700 dark:text-white">
+                      {/* TODO: add initials name */}
+                      NA
+                    </AvatarFallback>
+                  </Avatar>
                 </Button>
-              </form>
-            </div>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent className="w-56" align="end">
+                <UserMenuContent user={session.user} />
+              </DropdownMenuContent>
+            </DropdownMenu>
           ) : (
             <div className="flex items-center gap-2">
               <Button asChild variant="ghost">
