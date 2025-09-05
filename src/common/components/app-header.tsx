@@ -4,7 +4,11 @@ import { LayoutDashboard } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 
-import { Avatar, AvatarFallback } from "~/common/components/ui/avatar";
+import {
+  Avatar,
+  AvatarFallback,
+  AvatarImage,
+} from "~/common/components/ui/avatar";
 import { Button } from "~/common/components/ui/button";
 import {
   DropdownMenu,
@@ -19,6 +23,7 @@ import {
 } from "~/common/components/ui/navigation-menu";
 import { UserMenuContent } from "~/common/components/user-menu-content";
 import { cn } from "~/common/helpers/cn";
+import { getInitials } from "~/common/helpers/string";
 import type { NavItem } from "~/common/types/navigation";
 import { authClient } from "~/core/auth/client";
 import { env } from "~/env";
@@ -81,12 +86,20 @@ export function AppHeader() {
           {session ? (
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
-                <Button variant="ghost" className="size-10 rounded-full p-1">
+                <Button
+                  aria-label="Open user menu"
+                  variant="ghost"
+                  className="size-10 rounded-full p-1"
+                >
                   <Avatar className="size-8 overflow-hidden rounded-full">
-                    {/* TODO: add avatar image */}
+                    {session.user.image ? (
+                      <AvatarImage
+                        src={session.user.image}
+                        alt={session.user.name}
+                      />
+                    ) : null}
                     <AvatarFallback className="rounded-lg bg-neutral-200 text-black dark:bg-neutral-700 dark:text-white">
-                      {/* TODO: add initials name */}
-                      NA
+                      {getInitials(session.user.name)}
                     </AvatarFallback>
                   </Avatar>
                 </Button>
