@@ -3,6 +3,7 @@ import {
   createTRPCRouter,
   publicProcedure,
 } from "~/core/api/trpc";
+import { userRouter } from "~/features/users/user.router";
 
 /**
  * This is the primary router for your server.
@@ -11,6 +12,8 @@ import {
  */
 export const appRouter = createTRPCRouter({
   root: publicProcedure.query(() => ({ status: "ok" })),
+  // TODO: consider nesting under "admin"
+  user: userRouter,
 });
 
 // export type definition of API
