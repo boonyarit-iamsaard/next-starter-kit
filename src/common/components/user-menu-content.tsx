@@ -39,7 +39,7 @@ export function UserMenuContent({ user }: UserMenuContentProps) {
       <DropdownMenuSeparator />
       <DropdownMenuGroup>
         <DropdownMenuItem asChild>
-          <Link className="block w-full" href="/settings">
+          <Link className="block w-full" href="/settings/profile">
             <Settings className="mr-2" />
             Settings
           </Link>
