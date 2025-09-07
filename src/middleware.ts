@@ -2,7 +2,7 @@ import { getSessionCookie } from "better-auth/cookies";
 import type { NextRequest } from "next/server";
 import { NextResponse } from "next/server";
 
-const protectedRoutes = ["/dashboard"];
+const protectedRoutes = ["/settings"];
 const authRoutes = ["/sign-in", "/create-account"];
 
 export async function middleware(request: NextRequest) {
@@ -24,7 +24,7 @@ export async function middleware(request: NextRequest) {
   if (isAuthRoute && sessionCookie) {
     // TODO: ensure 'from' is safe and valid relative path
     const from = request.nextUrl.searchParams.get("from");
-    const redirectTo = new URL(from ?? "/dashboard", request.url);
+    const redirectTo = new URL(from ?? "/", request.url);
 
     return NextResponse.redirect(redirectTo);
   }

@@ -45,7 +45,7 @@ export function useSignInForm() {
         return;
       }
 
-      const redirectTo = searchParams.get("from") ?? "/dashboard";
+      const redirectTo = searchParams.get("from") ?? "/";
       router.push(redirectTo);
     } catch (err) {
       setError(
@@ -63,7 +63,7 @@ export function useSignInForm() {
     setError(null);
 
     try {
-      const redirectTo = searchParams.get("from") ?? "/dashboard";
+      const redirectTo = searchParams.get("from") ?? "/";
       const response = await signIn.social({
         provider: "google",
         callbackURL: redirectTo,
