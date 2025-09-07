@@ -1,6 +1,6 @@
 "use client";
 
-import { LayoutDashboard, Users } from "lucide-react";
+import { LayoutDashboard } from "lucide-react";
 import Link from "next/link";
 
 import { NavMain } from "~/common/components/nav-main";
@@ -13,36 +13,16 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
 } from "~/common/components/ui/sidebar";
-import type { NavItem } from "~/common/types/navigation";
+import type { NavItem } from "~/common/types/nav";
 import { env } from "~/env";
 
-import { NavFooter } from "./nav-footer";
 import { NavUser } from "./nav-user";
 
 interface AppSidebarProps {
-  mainNavItems?: NavItem[];
-  footerNavItems?: NavItem[];
+  navItems?: NavItem[];
 }
 
-const defaultMainNavItems: NavItem[] = [
-  {
-    title: "Dashboard",
-    href: "/admin",
-    icon: LayoutDashboard,
-  },
-  {
-    title: "Users",
-    href: "/admin/users",
-    icon: Users,
-  },
-];
-
-const defaultFooterNavItems: NavItem[] = [];
-
-export function AppSidebar({
-  mainNavItems = defaultMainNavItems,
-  footerNavItems = defaultFooterNavItems,
-}: AppSidebarProps) {
+export function AppSidebar({ navItems = [] }: AppSidebarProps) {
   return (
     <Sidebar collapsible="icon" variant="inset">
       <SidebarHeader>
@@ -64,11 +44,10 @@ export function AppSidebar({
       </SidebarHeader>
 
       <SidebarContent>
-        <NavMain items={mainNavItems} />
+        <NavMain items={navItems} />
       </SidebarContent>
 
       <SidebarFooter>
-        <NavFooter items={footerNavItems} className="mt-auto" />
         <NavUser />
       </SidebarFooter>
     </Sidebar>

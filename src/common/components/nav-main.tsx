@@ -3,13 +3,14 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 
+import { AppIcon } from "~/common/components/app-icon";
 import {
   SidebarGroup,
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
 } from "~/common/components/ui/sidebar";
-import type { NavItem } from "~/common/types/navigation";
+import type { NavItem } from "~/common/types/nav";
 
 interface NavMainProps {
   items: NavItem[];
@@ -29,7 +30,7 @@ export function NavMain({ items }: NavMainProps) {
               tooltip={{ children: item.title }}
             >
               <Link href={item.href} prefetch>
-                {item.icon && <item.icon />}
+                <AppIcon icon={item.icon} />
                 <span>{item.title}</span>
               </Link>
             </SidebarMenuButton>

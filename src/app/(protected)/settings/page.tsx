@@ -1,6 +1,6 @@
 import { PlaceholderPattern } from "~/common/components/ui/placeholder-pattern";
 
-export default async function DashboardPage() {
+export default async function SettingsPage() {
   return (
     <div className="flex min-h-[calc(100svh-4rem)] flex-1 flex-col gap-4 overflow-x-auto rounded-xl p-4">
       <div className="grid auto-rows-min gap-4 md:grid-cols-3">

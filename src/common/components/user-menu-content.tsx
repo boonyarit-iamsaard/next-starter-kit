@@ -1,6 +1,6 @@
 "use client";
 
-import { LogOut, Shield } from "lucide-react";
+import { LogOut, Settings, Shield } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 
@@ -38,6 +38,12 @@ export function UserMenuContent({ user }: UserMenuContentProps) {
       </DropdownMenuLabel>
       <DropdownMenuSeparator />
       <DropdownMenuGroup>
+        <DropdownMenuItem asChild>
+          <Link className="block w-full" href="/settings">
+            <Settings className="mr-2" />
+            Settings
+          </Link>
+        </DropdownMenuItem>
         <DropdownMenuItem asChild>
           <Link className="block w-full" href="/admin">
             <Shield className="mr-2" />

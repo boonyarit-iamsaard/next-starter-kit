@@ -4,6 +4,7 @@ import { LayoutDashboard } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 
+import { AppIcon } from "~/common/components/app-icon";
 import {
   Avatar,
   AvatarFallback,
@@ -24,17 +25,11 @@ import {
 import { UserMenuContent } from "~/common/components/user-menu-content";
 import { cn } from "~/common/helpers/cn";
 import { getInitials } from "~/common/helpers/string";
-import type { NavItem } from "~/common/types/navigation";
+import type { NavItem } from "~/common/types/nav";
 import { authClient } from "~/core/auth/client";
 import { env } from "~/env";
 
-const mainNavItems: NavItem[] = [
-  {
-    title: "Dashboard",
-    href: "/dashboard",
-    icon: LayoutDashboard,
-  },
-];
+const navNavItems: NavItem[] = [];
 
 const activeItemStyles =
   "text-neutral-900 dark:bg-neutral-800 dark:text-neutral-100";
@@ -56,27 +51,29 @@ export function AppHeader() {
         <div className="ml-6 hidden h-full items-center space-x-6 lg:flex">
           <NavigationMenu className="flex h-full items-stretch">
             <NavigationMenuList className="flex h-full items-stretch space-x-2">
-              {mainNavItems.map((item, index) => (
-                <NavigationMenuItem
-                  key={index}
-                  className="relative flex h-full items-center"
-                >
-                  <Link
-                    href={item.href}
-                    className={cn(
-                      navigationMenuTriggerStyle(),
-                      pathname === item.href && activeItemStyles,
-                      "h-9 cursor-pointer px-3",
-                    )}
+              {navNavItems.map((item, index) => {
+                return (
+                  <NavigationMenuItem
+                    key={index}
+                    className="relative flex h-full items-center"
                   >
-                    {item.icon && <item.icon className="mr-2 h-4 w-4" />}
-                    {item.title}
-                  </Link>
-                  {pathname === item.href && (
-                    <div className="absolute bottom-0 left-0 h-0.5 w-full translate-y-px bg-black dark:bg-white"></div>
-                  )}
-                </NavigationMenuItem>
-              ))}
+                    <Link
+                      href={item.href}
+                      className={cn(
+                        navigationMenuTriggerStyle(),
+                        pathname === item.href && activeItemStyles,
+                        "h-9 cursor-pointer px-3",
+                      )}
+                    >
+                      <AppIcon icon={item.icon} className="mr-2 h-4 w-4" />
+                      {item.title}
+                    </Link>
+                    {pathname === item.href && (
+                      <div className="absolute bottom-0 left-0 h-0.5 w-full translate-y-px bg-black dark:bg-white"></div>
+                    )}
+                  </NavigationMenuItem>
+                );
+              })}
             </NavigationMenuList>
           </NavigationMenu>
         </div>
