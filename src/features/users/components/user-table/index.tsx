@@ -5,7 +5,7 @@ import { columns } from "~/features/users/components/user-table/columns";
 import { api } from "~/trpc/react";
 
 export function UserTable() {
-  const { data } = api.user.getAll.useQuery();
+  const [data] = api.user.getAll.useSuspenseQuery();
 
   return <DataTable columns={columns} data={data ?? []} />;
 }
