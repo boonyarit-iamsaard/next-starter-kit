@@ -13,6 +13,7 @@ export const auth = betterAuth({
   }),
   emailAndPassword: {
     enabled: true,
+    autoSignIn: false,
     // TODO: enable email veerification
     requireEmailVerification: false,
     minPasswordLength: 8,

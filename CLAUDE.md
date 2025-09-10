@@ -27,6 +27,7 @@ This project uses pnpm as the package manager.
 - `pnpm db:migrate` - Run database migrations
 - `pnpm db:push` - Push schema to database
 - `pnpm db:reset` - Reset database (clear all data) using drizzle-seed
+- `pnpm db:seed` - Reset database and seed with test data (25 users)
 - `pnpm db:studio` - Launch Drizzle Studio
 
 ## Architecture Overview
@@ -66,7 +67,12 @@ src/
 │   └── database/          # Database configuration
 │       ├── index.ts       # Database client
 │       ├── reset.ts       # Database reset script
-│       └── schema.ts      # Drizzle schema definitions
+│       ├── seed.ts        # Database seeding script
+│       ├── schema.ts      # Drizzle schema definitions
+│       └── seeders/       # Database seeders
+│           ├── index.ts   # Main seeder orchestration
+│           ├── types.ts   # Seeder interfaces
+│           └── users.ts   # User seeder factory
 ├── features/              # Feature-specific components
 │   └── auth/              # Authentication feature
 │       ├── components/    # Auth UI components
@@ -92,6 +98,8 @@ src/
 5. **Authentication**: Better Auth handles email/password and OAuth (Google) authentication with modern UX standards
 6. **Environment Management**: Strict environment variable validation with @t3-oss/env-nextjs
 7. **Server Components**: Leverages React Server Components for optimal performance
+8. **Data Tables**: Server-side pagination with TanStack Table and shadcn/ui components
+9. **Database Seeding**: Factory-pattern seeder system for test data generation
 
 ### Authentication Architecture
 

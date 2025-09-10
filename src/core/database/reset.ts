@@ -6,14 +6,14 @@ import * as schema from "~/core/database/schema";
 import { env } from "~/env";
 
 async function main() {
-  console.log("🔄 Resetting database...");
+  console.info("🔄 Resetting database...");
 
   const client = postgres(env.DATABASE_URL, { max: 1 });
   const db = drizzle(client, { schema });
 
   try {
     await reset(db, schema);
-    console.log("✅ Database reset completed");
+    console.info("✅ Database reset completed");
   } catch (error) {
     console.error("❌ Database reset failed:", error);
     process.exit(1);
