@@ -8,27 +8,33 @@ This project uses pnpm as the package manager.
 
 ### Essential Commands
 
-- `pnpm dev` - Start development server with Turbo
-- `pnpm build` - Build production bundle
-- `pnpm preview` - Build and start production preview
-- `pnpm check` - Run all checks (lint, format, typecheck)
+| Command        | Description                              |
+| -------------- | ---------------------------------------- |
+| `pnpm dev`     | Start development server with Turbo      |
+| `pnpm build`   | Build production bundle                  |
+| `pnpm preview` | Build and start production preview       |
+| `pnpm check`   | Run all checks (lint, format, typecheck) |
 
 ### Code Quality
 
-- `pnpm lint` - Run ESLint
-- `pnpm lint:fix` - Fix ESLint issues automatically
-- `pnpm format` - Check Prettier formatting
-- `pnpm format:fix` - Fix Prettier formatting automatically
-- `pnpm typecheck` - Run TypeScript type checking
+| Command           | Description                           |
+| ----------------- | ------------------------------------- |
+| `pnpm lint`       | Run ESLint                            |
+| `pnpm lint:fix`   | Fix ESLint issues automatically       |
+| `pnpm format`     | Check Prettier formatting             |
+| `pnpm format:fix` | Fix Prettier formatting automatically |
+| `pnpm typecheck`  | Run TypeScript type checking          |
 
 ### Database Operations
 
-- `pnpm db:generate` - Generate Drizzle schema
-- `pnpm db:migrate` - Run database migrations
-- `pnpm db:push` - Push schema to database
-- `pnpm db:reset` - Reset database (clear all data) using drizzle-seed
-- `pnpm db:seed` - Reset database and seed with test data (25 users)
-- `pnpm db:studio` - Launch Drizzle Studio
+| Command            | Description                                        |
+| ------------------ | -------------------------------------------------- |
+| `pnpm db:generate` | Generate Drizzle schema                            |
+| `pnpm db:migrate`  | Run database migrations                            |
+| `pnpm db:push`     | Push schema to database                            |
+| `pnpm db:reset`    | Reset database (clear all data) using drizzle-seed |
+| `pnpm db:seed`     | Reset database and seed with test data (25 users)  |
+| `pnpm db:studio`   | Launch Drizzle Studio                              |
 
 ## Architecture Overview
 
@@ -47,46 +53,50 @@ This is a Next.js 15 starter kit built with the T3 stack pattern, featuring:
 
 ```text
 src/
-├── app/                    # Next.js App Router pages
-│   ├── (auth)/            # Route group for authentication
-│   │   ├── layout.tsx     # Shared auth layout
-│   │   ├── sign-in/       # /sign-in route
-│   │   └── create-account/ # /create-account route
+├── app/                           # Next.js App Router pages
+│   ├── (auth)/                    # Route group for authentication
+│   │   ├── layout.tsx             # Shared auth layout
+│   │   ├── sign-in/               # /sign-in route
+│   │   └── create-account/        # /create-account route
 │   ├── api/
-│   │   ├── auth/[...all]/ # Better Auth API routes
-│   │   └── trpc/[trpc]/   # tRPC API routes
-│   ├── layout.tsx         # Root layout
-│   └── page.tsx           # Home page
-├── core/                  # Core business logic
-│   ├── api/               # tRPC router and context
-│   │   ├── root.ts        # Main app router
-│   │   └── trpc.ts        # tRPC setup
-│   ├── auth/              # Better Auth configuration
-│   │   ├── index.ts       # Auth setup and config
-│   │   └── client.ts      # Client-side auth utilities
-│   └── database/          # Database configuration
-│       ├── index.ts       # Database client
-│       ├── reset.ts       # Database reset script
-│       ├── seed.ts        # Database seeding script
-│       ├── schema.ts      # Drizzle schema definitions
-│       └── seeders/       # Database seeders
-│           ├── index.ts   # Main seeder orchestration
-│           ├── types.ts   # Seeder interfaces
-│           └── users.ts   # User seeder factory
-├── features/              # Feature-specific components
-│   └── auth/              # Authentication feature
-│       ├── components/    # Auth UI components
-│       └── hooks/         # Auth custom hooks
-├── common/                # Shared components and utilities
+│   │   ├── auth/[...all]/         # Better Auth API routes
+│   │   └── trpc/[trpc]/           # tRPC API routes
+│   ├── layout.tsx                 # Root layout
+│   └── page.tsx                   # Home page
+├── core/                          # Core business logic
+│   ├── api/                       # tRPC router and context
+│   │   ├── root.ts                # Main app router
+│   │   └── trpc.ts                # tRPC setup
+│   ├── auth/                      # Better Auth configuration
+│   │   ├── index.ts               # Auth setup and config
+│   │   └── client.ts              # Client-side auth utilities
+│   └── database/                  # Database configuration
+│       ├── index.ts               # Database client
+│       ├── reset.ts               # Database reset script
+│       ├── seed.ts                # Database seeding script
+│       ├── schema.ts              # Drizzle schema definitions
+│       └── seeders/               # Database seeders
+│           ├── index.ts           # Main seeder orchestration
+│           ├── types.ts           # Seeder interfaces
+│           └── users.ts           # User seeder factory
+├── features/                      # Feature-specific components
+│   └── auth/                      # Authentication feature
+│       ├── components/            # Auth UI components
+│       └── hooks/                 # Auth custom hooks
+├── common/                        # Shared components and utilities
 │   ├── components/
-│   │   ├── ui/            # Reusable UI components
-│   │   └── layouts/       # Layout components
-│   └── helpers/           # Utility functions
-├── trpc/                  # tRPC client configuration
-│   ├── query-client.ts    # React Query client
-│   ├── react.tsx          # Client-side tRPC provider
-│   └── server.ts          # Server-side tRPC helpers
-└── env.ts                 # Environment variable validation
+│   │   ├── ui/                    # Reusable UI components
+│   │   ├── data-table.tsx         # TanStack Table with pagination
+│   │   ├── app-shell.tsx          # Main layout structure
+│   │   └── app-sidebar.tsx        # Navigation sidebar
+│   ├── hooks/                     # Shared custom hooks
+│   │   └── use-url-pagination.ts  # URL-synchronized pagination
+│   └── helpers/                   # Utility functions
+├── trpc/                          # tRPC client configuration
+│   ├── query-client.ts            # React Query client
+│   ├── react.tsx                  # Client-side tRPC provider
+│   └── server.ts                  # Server-side tRPC helpers
+└── env.ts                         # Environment variable validation
 ```
 
 ### Key Design Patterns
@@ -99,7 +109,8 @@ src/
 6. **Environment Management**: Strict environment variable validation with @t3-oss/env-nextjs
 7. **Server Components**: Leverages React Server Components for optimal performance
 8. **Data Tables**: Server-side pagination with TanStack Table and shadcn/ui components
-9. **Database Seeding**: Factory-pattern seeder system for test data generation
+9. **URL State Management**: Custom `useURLPagination` hook with kebab-case parameters and browser navigation support
+10. **Database Seeding**: Factory-pattern seeder system for test data generation
 
 ### Authentication Architecture
 
@@ -136,10 +147,21 @@ The authentication system uses Better Auth with:
 
 ### tRPC Setup
 
-- Main router in `src/core/api/root.ts`
-- Server-side caller utilities in `src/trpc/server.ts`
-- Client-side React Query integration in `src/trpc/react.tsx`
-- API routes handled through `src/app/api/trpc/[trpc]/route.ts`
+- **Main router** in `src/core/api/root.ts` - aggregates feature routers
+- **Server-side caller** utilities in `src/trpc/server.ts` for RSC
+- **Client-side React Query** integration in `src/trpc/react.tsx`
+- **API routes** handled through `src/app/api/trpc/[trpc]/route.ts`
+- **Feature routers** organized by domain (e.g., `src/features/users/user.router.ts`)
+
+### URL State Management
+
+The project includes a production-ready `useURLPagination` hook (`src/common/hooks/use-url-pagination.ts`):
+
+- **1-based URLs** (`?page=3&page-size=10`) with 0-based internal conversion for TanStack Table
+- **Kebab-case parameters** following web standards (`page-size` not `pageSize`)
+- **Automatic validation** and bounds checking with URL correction
+- **Browser navigation support** without breaking SPA behavior
+- **Type-safe** with full TypeScript integration
 
 ## Important Notes
 
@@ -149,6 +171,7 @@ The authentication system uses Better Auth with:
 - Uses server-only imports where appropriate to prevent client-side execution
 - Database reset script uses dotenvx to load environment variables automatically
 - Authentication follows modern UX/UI standards for terminology and user experience
+- URL parameters should use kebab-case (e.g., `page-size`, `search-term`) for web standards compliance
 
 ## Code Style Guidelines
 
@@ -159,6 +182,13 @@ The authentication system uses Better Auth with:
 - Prefer function declarations over arrow functions (except callbacks/closures)
 - Use early returns and type guards over nested if/else blocks
 - Always use braces for if statements - avoid nested ternaries
+
+### Comments
+
+- Write comments for **why** rather than **what** - explain reasoning and decisions
+- Avoid comments when code is self-explanatory
+- Keep comments clear, concise, and not verbose
+- Use JSDoc for public APIs and complex hooks
 
 ### Example
 
@@ -200,4 +230,20 @@ Write clear, concise git commit messages following conventional commit format.
 - Limit subject line to 72 characters maximum
 - Omit commit message body - keep commits concise
 - Do not end subject line with a period
-- Use common commit types: feat, fix, docs, style, refactor, test, chore
+
+### Commit Types - Rule of Thumb
+
+Choose the type based on the **primary intent** of your change:
+
+| Type       | Rule of Thumb                                         | Description                              |
+| ---------- | ----------------------------------------------------- | ---------------------------------------- |
+| `feat`     | Does this introduce a new user-facing capability?     | New features users can see/interact with |
+| `fix`      | Does this correct an error impacting user experience? | Bug fixes and error corrections          |
+| `style`    | Does this only affect visual presentation/formatting? | Cosmetic changes, code formatting        |
+| `refactor` | Does this restructure code without changing behavior? | Internal improvements for readability    |
+| `perf`     | Does this specifically make the app faster/efficient? | Performance optimizations                |
+| `test`     | Does this involve only test-related changes?          | Adding/modifying automated tests         |
+| `build`    | Does this relate to build system or dependencies?     | Build configuration, dependency updates  |
+| `ci`       | Does this only affect CI configuration/scripts?       | Continuous Integration changes           |
+| `docs`     | Does this only affect documentation files?            | Documentation updates                    |
+| `chore`    | Is this maintenance not modifying source/test files?  | Routine maintenance tasks                |

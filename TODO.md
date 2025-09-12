@@ -9,29 +9,75 @@
 - [ ] Keep pagination props interface in main data table component
 - [ ] Improve component reusability and maintainability
 
-### 2. Pagination Index Convention + URL Persistence (Combined)
+### 2. ✅ Pagination Index Convention + URL Persistence (Combined) - COMPLETED
 
-**Goal**: Implement URL state persistence while deciding on pagination index convention
+**Decision**: User-friendly 1-based URLs (`?page=3&page-size=10`) with internal 0-based conversion for TanStack Table compatibility
 
-- [ ] **Research Next.js URL state patterns** (useSearchParams, useRouter, shallow routing)
-- [ ] **Decision**: Choose pagination index convention considering URL implications
-  - URLs like `?page=1` (1-based) vs `?page=0` (0-based)
-  - Impact on user bookmarking and sharing
-  - Developer experience vs user experience trade-offs
-- [ ] **Implementation options**:
-  - Option A: 1-based URLs (`?page=1`), convert to 0-based internally
-  - Option B: 0-based URLs (`?page=0`), keep consistent throughout
-  - Option C: Use `offset` parameter (`?offset=0`) to avoid page numbering
-- [ ] **Implement URL synchronization**:
-  - Read URL params on page load
-  - Update URL when pagination changes (shallow routing)
-  - Handle browser back/forward navigation
-  - Validate URL parameters (bounds checking)
-- [ ] **Integration points**:
-  - Update tRPC query to accept URL-derived parameters
-  - Sync TanStack Table state with URL state
-  - Handle edge cases (invalid page numbers, out of bounds)
-- [ ] **Update test cases** to include URL persistence scenarios
+**Implementation**:
+
+- [x] Created `useURLPagination` hook with URL sync, validation, and browser navigation support
+- [x] Updated `UserTable` to use URL-backed pagination state
+- [x] Handles edge cases (invalid/out-of-bounds pages) with automatic URL correction
+
+### 4. URL State Management Hooks (Future Enhancements)
+
+**Goal**: Build complementary hooks using the same reactive pattern as `useURLPagination`
+
+- [ ] **useURLSorting**: Handle sorting state with URL persistence
+  - Support multiple sort columns (`?sort=name,desc&sort=created-at,asc`)
+  - TanStack Table `SortingState` compatibility
+  - Kebab-case column names for URLs (web standard)
+- [ ] **useURLFilters**: Manage filter state in URLs
+  - Support multiple filters (`?status=active&search-term=value`)
+  - Type-safe filter definitions
+  - Debounced updates for search inputs
+  - Kebab-case parameter names
+- [ ] **useURLState**: Generic URL state hook
+  - Simple key-value URL state (`?sidebar-open=true`)
+  - Type-safe value parsing and validation
+  - Reusable for various UI state needs
+  - Kebab-case parameter names
+
+## CI/CD & Testing Infrastructure
+
+### 5. GitHub Actions Workflow Setup
+
+**Goal**: Automated static code analysis and quality checks
+
+- [ ] **Research environment variable strategy** for GitHub Actions
+  - Option A: Mock env vars for type checking (fastest, CI-focused)
+  - Option B: Use GitHub Secrets for real env validation
+  - Option C: Conditional env validation (skip in CI, validate in build)
+- [ ] **Create static analysis workflow** (`.github/workflows/ci.yml`)
+  - Run `pnpm lint` (ESLint)
+  - Run `pnpm format` (Prettier check)
+  - Run `pnpm typecheck` (TypeScript compilation)
+  - Decide on build requirement for type checking
+- [ ] **Environment handling decision**:
+  - Skip database env vars in CI (type-only validation)
+  - Mock required env vars for successful type checking
+  - Document env setup in workflow
+
+### 6. Testing Framework Setup
+
+**Goal**: Choose and configure testing framework for the project
+
+- [x] **Framework decision**: ✅ **Vitest chosen**
+  - Superior TypeScript support (built-in, no configuration needed)
+  - Native ESM support (no CommonJS headaches)
+  - ~10x faster than Jest with modern React/Next.js compatibility
+  - Better alignment with Next.js 15 + TypeScript + ESM stack
+- [ ] **Configure chosen testing framework**
+  - Install dependencies and setup config
+  - Configure with TypeScript and Next.js App Router
+  - Setup test utilities for React components
+  - Configure path aliases (`~/*` imports)
+- [ ] **First test implementation**: URL pagination hook
+  - Test `useURLPagination` hook functionality
+  - URL parameter parsing and validation
+  - 1-based to 0-based conversion logic
+  - Edge cases (invalid pages, out-of-bounds)
+  - Browser navigation simulation
 
 ## Authentication Configuration
 
