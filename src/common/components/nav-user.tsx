@@ -16,14 +16,14 @@ import {
 import { UserInfo } from "~/common/components/user-info";
 import { UserMenuContent } from "~/common/components/user-menu-content";
 import { useIsMobile } from "~/common/hooks/use-mobile";
-import { authClient } from "~/core/auth/client";
+import { useCurrentSession } from "~/features/auth/hooks/use-current-session";
 
 export function NavUser() {
   const isMobile = useIsMobile();
   const { state } = useSidebar();
-  const { data: session } = authClient.useSession();
+  const currentSession = useCurrentSession();
 
-  return session ? (
+  return currentSession ? (
     <SidebarMenu>
       <SidebarMenuItem>
         <DropdownMenu>
@@ -32,7 +32,7 @@ export function NavUser() {
               size="lg"
               className="group text-sidebar-accent-foreground data-[state=open]:bg-sidebar-accent"
             >
-              <UserInfo user={session.user} />
+              <UserInfo user={currentSession.user} />
               <ChevronsUpDown className="ml-auto size-4" />
             </SidebarMenuButton>
           </DropdownMenuTrigger>
@@ -43,7 +43,7 @@ export function NavUser() {
               isMobile ? "bottom" : state === "collapsed" ? "left" : "bottom"
             }
           >
-            <UserMenuContent user={session.user} />
+            <UserMenuContent user={currentSession.user} />
           </DropdownMenuContent>
         </DropdownMenu>
       </SidebarMenuItem>

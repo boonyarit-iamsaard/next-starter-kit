@@ -3,9 +3,10 @@
 import type { ColumnDef } from "@tanstack/react-table";
 import { format } from "date-fns";
 
-import type { SelectUser } from "~/core/database/schema";
+import type { UserModel } from "~/features/users/user.model";
+import { userRoleLabels } from "~/features/users/user.model";
 
-export const columns: ColumnDef<SelectUser>[] = [
+export const columns: ColumnDef<UserModel>[] = [
   {
     header: "Name",
     accessorKey: "name",
@@ -13,6 +14,13 @@ export const columns: ColumnDef<SelectUser>[] = [
   {
     header: "Email",
     accessorKey: "email",
+  },
+  {
+    header: "Role",
+    accessorKey: "role",
+    cell: ({ row }) => {
+      return userRoleLabels[row.original.role];
+    },
   },
   {
     header: "Since",

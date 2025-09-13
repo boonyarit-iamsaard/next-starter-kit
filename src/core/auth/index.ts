@@ -1,7 +1,9 @@
 import { betterAuth } from "better-auth";
 import { drizzleAdapter } from "better-auth/adapters/drizzle";
 import { nextCookies } from "better-auth/next-js";
+import { admin } from "better-auth/plugins";
 
+import { userRoles } from "~/common/types/user-role";
 import { db } from "~/core/database";
 import { env } from "~/env";
 
@@ -11,6 +13,11 @@ export const auth = betterAuth({
   database: drizzleAdapter(db, {
     provider: "pg",
   }),
+  advanced: {
+    database: {
+      generateId: false,
+    },
+  },
   emailAndPassword: {
     enabled: true,
     autoSignIn: false,
@@ -25,7 +32,14 @@ export const auth = betterAuth({
       clientSecret: env.GOOGLE_CLIENT_SECRET,
     },
   },
-  plugins: [nextCookies()],
+  plugins: [
+    nextCookies(),
+    admin({
+      roleColumn: "role",
+      defaultRole: userRoles.USER,
+      adminRole: userRoles.ADMIN,
+    }),
+  ],
 });
 
 export type Session = typeof auth.$Infer.Session;

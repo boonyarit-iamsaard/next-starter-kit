@@ -1,45 +1,71 @@
-import { getSessionCookie } from "better-auth/cookies";
 import type { NextRequest } from "next/server";
 import { NextResponse } from "next/server";
 
-const protectedRoutes = ["/settings"];
+import { userRoles } from "~/common/types/user-role";
+import { getCurrentSession } from "~/features/auth/auth.service";
+
+const adminRoutes = ["/admin"];
+const protectedRoutes = ["/settings", ...adminRoutes];
 const authRoutes = ["/sign-in", "/create-account"];
+
+const createRouteChecker = (routes: string[]) => (pathname: string) =>
+  routes.some(
+    (route) => pathname === route || pathname.startsWith(`${route}/`),
+  );
+
+const isAuthRoute = createRouteChecker(authRoutes);
+const isProtectedRoute = createRouteChecker(protectedRoutes);
+const isAdminRoute = createRouteChecker(adminRoutes);
+
+function getValidRedirectPath(path: string | null): string {
+  if (!path || path.startsWith("http") || path.includes("://")) {
+    return "/";
+  }
+
+  if (!path.startsWith("/") || path.includes("..") || path.includes("//")) {
+    return "/";
+  }
+
+  return path;
+}
 
 export async function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
 
-  const isAuthRoute = authRoutes.some(
-    (route) => pathname === route || pathname.startsWith(`${route}/`),
-  );
-  const isProtectedRoute = protectedRoutes.some(
-    (route) => pathname === route || pathname.startsWith(`${route}/`),
-  );
-
-  if (!isProtectedRoute && !isAuthRoute) {
+  // Skip middleware for non-auth and non-protected routes
+  if (!isProtectedRoute(pathname) && !isAuthRoute(pathname)) {
     return NextResponse.next();
   }
 
-  const sessionCookie = getSessionCookie(request);
+  const currentSession = await getCurrentSession(request.headers);
 
-  if (isAuthRoute && sessionCookie) {
-    // TODO: ensure 'from' is safe and valid relative path
+  // Handle protected routes without session
+  if (isProtectedRoute(pathname) && !currentSession) {
+    const signInUrl = new URL("/sign-in", request.url);
+    signInUrl.searchParams.set("from", pathname);
+    return NextResponse.redirect(signInUrl);
+  }
+
+  // Handle auth routes with existing session
+  if (isAuthRoute(pathname) && currentSession) {
     const from = request.nextUrl.searchParams.get("from");
-    const redirectTo = new URL(from ?? "/", request.url);
-
+    const safePath = getValidRedirectPath(from);
+    const redirectTo = new URL(safePath, request.url);
     return NextResponse.redirect(redirectTo);
   }
 
-  if (isProtectedRoute && !sessionCookie) {
-    const signInUrl = new URL("/sign-in", request.url);
-    signInUrl.searchParams.set("from", pathname);
-
-    return NextResponse.redirect(signInUrl);
+  // Handle admin routes with proper type checking
+  if (isAdminRoute(pathname) && currentSession) {
+    if (currentSession.user.role !== userRoles.ADMIN) {
+      return NextResponse.redirect(new URL("/unauthorized", request.url));
+    }
   }
 
   return NextResponse.next();
 }
 
 export const config = {
+  runtime: "nodejs",
   matcher: [
     /*
      * Match all request paths except for the ones starting with:

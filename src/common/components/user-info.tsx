@@ -4,10 +4,10 @@ import {
   AvatarImage,
 } from "~/common/components/ui/avatar";
 import { getInitials } from "~/common/helpers/string";
-import type { Session } from "~/core/auth";
+import type { SessionUser } from "~/features/auth/auth.model";
 
 interface UserInfoProps {
-  user: Session["user"];
+  user: SessionUser;
 }
 
 export function UserInfo({ user }: UserInfoProps) {

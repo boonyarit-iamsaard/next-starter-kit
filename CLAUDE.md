@@ -53,74 +53,95 @@ This is a Next.js 15 starter kit built with the T3 stack pattern, featuring:
 
 ```text
 src/
-├── app/                           # Next.js App Router pages
-│   ├── (auth)/                    # Route group for authentication
-│   │   ├── layout.tsx             # Shared auth layout
-│   │   ├── sign-in/               # /sign-in route
-│   │   └── create-account/        # /create-account route
+├── app/                                   # Next.js App Router pages
+│   ├── (auth)/                            # Route group for authentication
+│   │   ├── layout.tsx                     # Shared auth layout
+│   │   ├── sign-in/                       # /sign-in route
+│   │   └── create-account/                # /create-account route
 │   ├── api/
-│   │   ├── auth/[...all]/         # Better Auth API routes
-│   │   └── trpc/[trpc]/           # tRPC API routes
-│   ├── layout.tsx                 # Root layout
-│   └── page.tsx                   # Home page
-├── core/                          # Core business logic
-│   ├── api/                       # tRPC router and context
-│   │   ├── root.ts                # Main app router
-│   │   └── trpc.ts                # tRPC setup
-│   ├── auth/                      # Better Auth configuration
-│   │   ├── index.ts               # Auth setup and config
-│   │   └── client.ts              # Client-side auth utilities
-│   └── database/                  # Database configuration
-│       ├── index.ts               # Database client
-│       ├── reset.ts               # Database reset script
-│       ├── seed.ts                # Database seeding script
-│       ├── schema.ts              # Drizzle schema definitions
-│       └── seeders/               # Database seeders
-│           ├── index.ts           # Main seeder orchestration
-│           ├── types.ts           # Seeder interfaces
-│           └── users.ts           # User seeder factory
-├── features/                      # Feature-specific components
-│   └── auth/                      # Authentication feature
-│       ├── components/            # Auth UI components
-│       └── hooks/                 # Auth custom hooks
-├── common/                        # Shared components and utilities
+│   │   ├── auth/[...all]/                 # Better Auth API routes
+│   │   └── trpc/[trpc]/                   # tRPC API routes
+│   ├── layout.tsx                         # Root layout
+│   └── page.tsx                           # Home page
+├── core/                                  # Cross-domain singletons & infrastructure
+│   ├── api/                               # tRPC router and context
+│   │   ├── root.ts                        # Main app router
+│   │   └── trpc.ts                        # tRPC setup
+│   ├── auth/                              # Better Auth configuration
+│   │   ├── index.ts                       # Auth setup and config
+│   │   └── client.ts                      # Client-side auth utilities
+│   └── database/                          # Database configuration
+│       ├── index.ts                       # Database client
+│       ├── reset.ts                       # Database reset script
+│       ├── seed.ts                        # Database seeding script
+│       ├── schema.ts                      # Drizzle schema definitions
+│       └── seeders/                       # Database seeders
+│           ├── index.ts                   # Main seeder orchestration
+│           ├── types.ts                   # Seeder interfaces
+│           └── users.ts                   # User seeder factory
+├── features/                              # Domain-specific logic & components
+│   ├── auth/                              # Authentication domain
+│   │   ├── auth.model.ts                  # SessionUser, CurrentSession types & schemas
+│   │   ├── auth.service.ts                # getCurrentSession() server-side service
+│   │   ├── components/                    # Auth UI components
+│   │   └── hooks/                         # Auth custom hooks
+│   │       └── use-current-session.ts     # Client-side session hook
+│   └── users/                             # User management domain
+│       ├── user.model.ts                  # Full UserModel with business logic
+│       ├── user.router.ts                 # tRPC routes for users
+│       └── components/                    # User-specific components
+├── common/                                # Cross-domain shared utilities
+│   ├── types/
+│   │   ├── user-role.ts                   # Shared role definitions (UserRole, userRoles)
+│   │   └── nav.ts                         # Navigation types
 │   ├── components/
-│   │   ├── ui/                    # Reusable UI components
-│   │   ├── data-table.tsx         # TanStack Table with pagination
-│   │   ├── app-shell.tsx          # Main layout structure
-│   │   └── app-sidebar.tsx        # Navigation sidebar
-│   ├── hooks/                     # Shared custom hooks
-│   │   └── use-url-pagination.ts  # URL-synchronized pagination
-│   └── helpers/                   # Utility functions
-├── trpc/                          # tRPC client configuration
-│   ├── query-client.ts            # React Query client
-│   ├── react.tsx                  # Client-side tRPC provider
-│   └── server.ts                  # Server-side tRPC helpers
-└── env.ts                         # Environment variable validation
+│   │   ├── ui/                            # Reusable UI components
+│   │   ├── data-table.tsx                 # TanStack Table with pagination
+│   │   ├── app-shell.tsx                  # Main layout structure
+│   │   └── app-sidebar.tsx                # Navigation sidebar
+│   ├── hooks/                             # Shared custom hooks
+│   │   └── use-url-pagination.ts          # URL-synchronized pagination
+│   └── helpers/                           # Utility functions
+├── trpc/                                  # tRPC client configuration
+│   ├── query-client.ts                    # React Query client
+│   ├── react.tsx                          # Client-side tRPC provider
+│   └── server.ts                          # Server-side tRPC helpers
+└── env.ts                                 # Environment variable validation
 ```
 
 ### Key Design Patterns
 
 1. **Route Groups**: Authentication pages use `(auth)` route group for shared layout and organization
-2. **Feature-based Architecture**: Components organized by domain (e.g., `features/auth/`) for better maintainability
-3. **Type-safe API**: All API calls use tRPC for end-to-end type safety
-4. **Database Schema**: Uses Drizzle ORM with PostgreSQL, includes Better Auth tables (users, sessions, accounts, verifications)
-5. **Authentication**: Better Auth handles email/password and OAuth (Google) authentication with modern UX standards
-6. **Environment Management**: Strict environment variable validation with @t3-oss/env-nextjs
-7. **Server Components**: Leverages React Server Components for optimal performance
-8. **Data Tables**: Server-side pagination with TanStack Table and shadcn/ui components
-9. **URL State Management**: Custom `useURLPagination` hook with kebab-case parameters and browser navigation support
-10. **Database Seeding**: Factory-pattern seeder system for test data generation
+2. **Domain-Centric Architecture**: Features organized by business domain with clear ownership and no circular dependencies
+3. **Clean Dependency Flow**: `Presentation → Features → Common → Core` with proper separation of concerns
+4. **Type-safe API**: All API calls use tRPC for end-to-end type safety
+5. **Database Schema**: Uses Drizzle ORM with PostgreSQL, includes Better Auth tables (users, sessions, accounts, verifications)
+6. **Authentication**: Better Auth handles email/password and OAuth (Google) authentication with modern UX standards
+7. **Environment Management**: Strict environment variable validation with @t3-oss/env-nextjs
+8. **Server Components**: Leverages React Server Components for optimal performance
+9. **Data Tables**: Server-side pagination with TanStack Table and shadcn/ui components
+10. **URL State Management**: Custom `useURLPagination` hook with kebab-case parameters and browser navigation support
+11. **Database Seeding**: Factory-pattern seeder system for test data generation
+12. **Session Management**: Domain-specific session handling with separate SessionUser (lightweight) vs UserModel (full data)
 
 ### Authentication Architecture
 
-The authentication system follows modern UX/UI best practices:
+The authentication system follows modern UX/UI best practices and domain-driven design:
+
+**Domain Organization:**
+
+- Authentication logic lives in `features/auth/` domain
+- `auth.model.ts`: SessionUser type, CurrentSession interface, and Zod schemas
+- `auth.service.ts`: Server-side `getCurrentSession()` function for RSC/middleware
+- `hooks/use-current-session.ts`: Client-side session hook with type validation
+- Clean separation between session data (SessionUser) and full user data (UserModel)
 
 **Components & Hooks:**
 
 - `SignInForm` component with `useSignInForm` hook (`/sign-in` route)
 - `CreateAccountForm` component with `useCreateAccountForm` hook (`/create-account` route)
 - Shared `AuthLayout` applied via route group layout
+- `useCurrentSession()` hook for client-side session access with proper typing
 
 **Terminology Standards:**
 
@@ -134,6 +155,8 @@ The authentication system follows modern UX/UI best practices:
 - Client-side navigation with Next.js `useRouter`
 - Form validation with react-hook-form and Zod
 - Database integration via Drizzle ORM PostgreSQL adapter
+- Role-based access control with typed roles ("user" | "admin")
+- Middleware integration for server-side route protection
 
 ### Better Auth Setup
 
@@ -163,6 +186,28 @@ The project includes a production-ready `useURLPagination` hook (`src/common/hoo
 - **Browser navigation support** without breaking SPA behavior
 - **Type-safe** with full TypeScript integration
 
+## Architecture Principles
+
+### Domain Organization
+
+- **Core**: Cross-domain singletons & infrastructure (database, auth config, environment)
+- **Common**: Cross-domain shared utilities (types, UI components, generic hooks)
+- **Features**: Domain-specific logic organized by business capability (auth, users, etc.)
+
+### Dependency Rules
+
+- **Clean Flow**: Presentation → Features → Common → Core
+- **No Circular Dependencies**: Features can depend on other features, but avoid circular references
+- **Domain Ownership**: Each feature domain owns its types, services, and business logic
+- **Shared Types**: Cross-domain types (like UserRole) live in `common/types/`
+
+### Session Architecture
+
+- **SessionUser**: Lightweight type for session data (auth domain)
+- **UserModel**: Full user data with business logic (users domain)
+- **Domain Services**: `getCurrentSession()` in auth domain, not shared utilities
+- **Type Safety**: Proper Zod validation at domain boundaries
+
 ## Important Notes
 
 - **ALWAYS run `pnpm check` after making any code changes and fix any issues before proceeding**
@@ -172,6 +217,7 @@ The project includes a production-ready `useURLPagination` hook (`src/common/hoo
 - Database reset script uses dotenvx to load environment variables automatically
 - Authentication follows modern UX/UI standards for terminology and user experience
 - URL parameters should use kebab-case (e.g., `page-size`, `search-term`) for web standards compliance
+- When adding new features, create new domains in `features/` with clear ownership of types and logic
 
 ## Code Style Guidelines
 

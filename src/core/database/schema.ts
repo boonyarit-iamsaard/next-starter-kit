@@ -1,11 +1,14 @@
-import { randomUUID } from "node:crypto";
+import { pgEnum, pgTable } from "drizzle-orm/pg-core";
 
-import { pgTable } from "drizzle-orm/pg-core";
+import { type UserRole, userRoles } from "~/common/types/user-role";
+
+export const userRoleEnum = pgEnum("role", [userRoles.USER, userRoles.ADMIN]);
+export type { UserRole };
 
 export const user = pgTable("users", (t) => ({
   id: t
     .text()
-    .$defaultFn(() => randomUUID())
+    .$defaultFn(() => crypto.randomUUID())
     .primaryKey(),
   name: t.text().notNull(),
   email: t.text().notNull().unique(),
@@ -14,6 +17,7 @@ export const user = pgTable("users", (t) => ({
     .$defaultFn(() => false)
     .notNull(),
   image: t.text(),
+  role: userRoleEnum(),
   createdAt: t
     .timestamp("created_at", { mode: "date", withTimezone: true })
     .$defaultFn(() => new Date())
@@ -23,13 +27,11 @@ export const user = pgTable("users", (t) => ({
     .$onUpdateFn(() => new Date())
     .notNull(),
 }));
-export type SelectUser = typeof user.$inferSelect;
-export type InsertUser = typeof user.$inferInsert;
 
 export const session = pgTable("sessions", (t) => ({
   id: t
     .text()
-    .$defaultFn(() => randomUUID())
+    .$defaultFn(() => crypto.randomUUID())
     .primaryKey(),
   expiresAt: t
     .timestamp("expires_at", { mode: "date", withTimezone: true })
@@ -54,7 +56,7 @@ export const session = pgTable("sessions", (t) => ({
 export const account = pgTable("accounts", (t) => ({
   id: t
     .text()
-    .$defaultFn(() => randomUUID())
+    .$defaultFn(() => crypto.randomUUID())
     .primaryKey(),
   accountId: t.text("account_id").notNull(),
   providerId: t.text("provider_id").notNull(),
@@ -88,7 +90,7 @@ export const account = pgTable("accounts", (t) => ({
 export const verification = pgTable("verifications", (t) => ({
   id: t
     .text()
-    .$defaultFn(() => randomUUID())
+    .$defaultFn(() => crypto.randomUUID())
     .primaryKey(),
   identifier: t.text().notNull(),
   value: t.text().notNull(),

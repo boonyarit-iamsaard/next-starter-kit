@@ -14,6 +14,23 @@ export const createUsersSeeder: SeederFactory = ({ count = 10, db }) => {
   return {
     name: "users",
     seed: async () => {
+      const adminEmail = "admin@example.com";
+      await auth.api.signUpEmail({
+        body: {
+          name: "Admin",
+          email: adminEmail,
+          password: "password",
+        },
+      });
+
+      await db
+        .update(user)
+        .set({
+          emailVerified: true,
+          role: "admin",
+        })
+        .where(eq(user.email, adminEmail));
+
       for (let i = 0; i < count; i++) {
         const formattedNumber = formatUserNumber(i, count);
         const name = `User-${formattedNumber}`;
@@ -30,7 +47,10 @@ export const createUsersSeeder: SeederFactory = ({ count = 10, db }) => {
 
         await db
           .update(user)
-          .set({ emailVerified: true })
+          .set({
+            emailVerified: true,
+            role: "user",
+          })
           .where(eq(user.email, email));
       }
     },

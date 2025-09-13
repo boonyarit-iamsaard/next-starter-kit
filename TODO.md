@@ -79,6 +79,81 @@
   - Edge cases (invalid pages, out-of-bounds)
   - Browser navigation simulation
 
+## Architecture & Contract Boundaries
+
+### 7. Service/Repository Layer Implementation
+
+**Goal**: Implement proper service and repository layers for clear data access boundaries
+
+- [ ] **Create User Service Layer** (`features/users/user.service.ts`)
+  - Extract database logic from tRPC router
+  - Implement `getUsersPaginated()` service method
+  - Handle data transformation at service boundary
+  - Clean separation: Router → Service → Repository → Database
+- [ ] **Create Repository Interfaces**
+  - Define abstract repository contracts
+  - Implement concrete Drizzle repositories
+  - Enable dependency injection and testing
+- [ ] **Update tRPC Router**
+  - Remove direct database access from `user.router.ts`
+  - Delegate to service layer
+  - Focus on input validation and response formatting
+- [ ] **Remove Runtime DB Parsing**
+  - Database is trusted source - no need for Zod validation
+  - Transform at service boundary, not in router
+  - Clear data flow: DB → Service (transform) → Router → Client
+
+### 8. tRPC Authentication Context
+
+**Goal**: Add proper authentication context to tRPC procedures
+
+- [ ] **Update tRPC Context** (`core/api/trpc.ts`)
+  - Add `getCurrentSession()` to context creation
+  - Provide session info to all procedures
+  - Handle authentication at infrastructure level
+- [ ] **Create Protected Procedures**
+  - Add `protectedProcedure` for authenticated routes
+  - Add `adminProcedure` for admin-only routes
+  - Remove reliance on `publicProcedure` for sensitive data
+- [ ] **Session Middleware**
+  - Create reusable auth middleware
+  - Handle session validation consistently
+  - Proper error responses for auth failures
+
+### 9. Improved State Management Contracts
+
+**Goal**: Clear contracts for loading, error, and data states
+
+- [ ] **Enhanced Hook Contracts** (`features/auth/hooks/use-current-session.ts`)
+  - Return `{ session, isLoading, error }` instead of `session | null`
+  - Distinguish between loading vs unauthenticated states
+  - Proper error boundaries and failure handling
+- [ ] **Loading State Standards**
+  - Consistent loading patterns across hooks
+  - Skeleton components for loading states
+  - Error boundaries with retry mechanisms
+- [ ] **Type-Safe Global State**
+  - Remove `as unknown as` type assertions
+  - Proper typing for global development utilities
+  - Clear development vs production boundaries
+
+### 10. Data Transformation Ownership
+
+**Goal**: Clear ownership of data transformation responsibilities
+
+- [ ] **Domain Boundary Transformations**
+  - Auth domain: Session → SessionUser (auth.service.ts)
+  - Users domain: Database → UserModel (user.service.ts)
+  - Clear transformation points with validation
+- [ ] **API Response Standards**
+  - Consistent response shapes across tRPC procedures
+  - Standard error response format
+  - Pagination response standardization
+- [ ] **Validation Strategy**
+  - Input validation: Router level (untrusted client data)
+  - Output validation: Service level (domain boundaries)
+  - No validation: Database level (trusted internal data)
+
 ## Authentication Configuration
 
 ### 3. Configure autoSignIn Behavior

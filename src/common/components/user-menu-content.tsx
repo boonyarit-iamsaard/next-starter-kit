@@ -11,11 +11,12 @@ import {
   DropdownMenuSeparator,
 } from "~/common/components/ui/dropdown-menu";
 import { UserInfo } from "~/common/components/user-info";
-import type { Session } from "~/core/auth";
+import { userRoles } from "~/common/types/user-role";
 import { authClient } from "~/core/auth/client";
+import type { SessionUser } from "~/features/auth/auth.model";
 
 interface UserMenuContentProps {
-  user: Session["user"];
+  user: SessionUser;
 }
 
 export function UserMenuContent({ user }: UserMenuContentProps) {
@@ -44,12 +45,14 @@ export function UserMenuContent({ user }: UserMenuContentProps) {
             Settings
           </Link>
         </DropdownMenuItem>
-        <DropdownMenuItem asChild>
-          <Link className="block w-full" href="/admin">
-            <Shield className="mr-2" />
-            Admin
-          </Link>
-        </DropdownMenuItem>
+        {user.role === userRoles.ADMIN && (
+          <DropdownMenuItem asChild>
+            <Link className="block w-full" href="/admin">
+              <Shield className="mr-2" />
+              Admin
+            </Link>
+          </DropdownMenuItem>
+        )}
       </DropdownMenuGroup>
       <DropdownMenuSeparator />
       <DropdownMenuItem onClick={handleLogout}>

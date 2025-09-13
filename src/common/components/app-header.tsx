@@ -26,9 +26,9 @@ import { UserMenuContent } from "~/common/components/user-menu-content";
 import { cn } from "~/common/helpers/cn";
 import { getInitials } from "~/common/helpers/string";
 import type { NavItem } from "~/common/types/nav";
-import { authClient } from "~/core/auth/client";
 import { navConfig } from "~/core/configs/nav";
 import { env } from "~/env";
+import { useCurrentSession } from "~/features/auth/hooks/use-current-session";
 
 interface NavItemContentProps {
   currentPath: string;
@@ -63,7 +63,7 @@ export function NavItemContent({ currentPath, item }: NavItemContentProps) {
 
 export function AppHeader() {
   const currentPath = usePathname();
-  const { data: session } = authClient.useSession();
+  const currentSession = useCurrentSession();
 
   return (
     <div className="border-sidebar-border/80 border-b">
@@ -96,7 +96,7 @@ export function AppHeader() {
 
         <div className="ml-auto flex items-center space-x-2">
           {/* TODO: add loading skeleton */}
-          {session ? (
+          {currentSession ? (
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
                 <Button
@@ -105,20 +105,20 @@ export function AppHeader() {
                   className="size-10 rounded-full p-1"
                 >
                   <Avatar className="size-8 overflow-hidden rounded-full">
-                    {session.user.image ? (
+                    {currentSession.user.image ? (
                       <AvatarImage
-                        src={session.user.image}
-                        alt={session.user.name}
+                        src={currentSession.user.image}
+                        alt={currentSession.user.name}
                       />
                     ) : null}
                     <AvatarFallback className="rounded-lg bg-neutral-200 text-black dark:bg-neutral-700 dark:text-white">
-                      {getInitials(session.user.name)}
+                      {getInitials(currentSession.user.name)}
                     </AvatarFallback>
                   </Avatar>
                 </Button>
               </DropdownMenuTrigger>
               <DropdownMenuContent className="w-56" align="end">
-                <UserMenuContent user={session.user} />
+                <UserMenuContent user={currentSession.user} />
               </DropdownMenuContent>
             </DropdownMenu>
           ) : (
