@@ -208,6 +208,38 @@ The project includes a production-ready `useURLPagination` hook (`src/common/hoo
 - **Domain Services**: `getCurrentSession()` in auth domain, not shared utilities
 - **Type Safety**: Proper Zod validation at domain boundaries
 
+### Service/Repository Layer Architecture
+
+The project implements a class-based service and repository pattern with manual dependency injection:
+
+**Interface Design:**
+
+- **Arrow function properties**: `getUsersPaginated: (params: PaginationParams) => Promise<PaginatedUsers>`
+- **No 'I' prefix**: Clean TypeScript naming (`UserService`, not `IUserService`)
+- **Type safety**: Arrow functions use contravariant checking (prevents parameter variance issues)
+
+**Implementation Pattern:**
+
+- **Class-based services**: `class UserServiceImpl implements UserService`
+- **Arrow function methods**: `getUsersPaginated = async (params) => { }` (prevents `this` binding issues)
+- **Dependency injection**: Manual injection via tRPC context creation
+
+**Architecture Flow:**
+
+```
+tRPC Router → Service Layer → Repository Layer → Database
+     ↓              ↓                ↓
+Input validation  Business logic  Data access
+Response format   Transformation   DB queries
+```
+
+**Justification:**
+
+- **Memory efficient**: Classes share methods via prototype (optimal for per-request tRPC context)
+- **Type safe**: Prevents TypeScript method variance unsoundness and runtime `this` binding issues
+- **Future-proof**: Seamless evolution to Clean Architecture/DDD/Event-driven patterns
+- **Testable**: Manual DI enables easy mocking and unit testing
+
 ## Important Notes
 
 - **ALWAYS run `pnpm check` after making any code changes and fix any issues before proceeding**

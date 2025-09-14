@@ -19,7 +19,7 @@
 - [x] Updated `UserTable` to use URL-backed pagination state
 - [x] Handles edge cases (invalid/out-of-bounds pages) with automatic URL correction
 
-### 4. URL State Management Hooks (Future Enhancements)
+### 3. URL State Management Hooks (Future Enhancements)
 
 **Goal**: Build complementary hooks using the same reactive pattern as `useURLPagination`
 
@@ -40,7 +40,7 @@
 
 ## CI/CD & Testing Infrastructure
 
-### 5. GitHub Actions Workflow Setup
+### 4. GitHub Actions Workflow Setup
 
 **Goal**: Automated static code analysis and quality checks
 
@@ -58,7 +58,7 @@
   - Mock required env vars for successful type checking
   - Document env setup in workflow
 
-### 6. Testing Framework Setup
+### 5. Testing Framework Setup
 
 **Goal**: Choose and configure testing framework for the project
 
@@ -81,29 +81,58 @@
 
 ## Architecture & Contract Boundaries
 
-### 7. Service/Repository Layer Implementation
+### 6. Service/Repository Layer Implementation
 
 **Goal**: Implement proper service and repository layers for clear data access boundaries
 
+**ADR - Architecture Decision Record**:
+
+- **Pattern**: Class-based services with manual dependency injection
+- **Interface naming**: No 'I' prefix (TypeScript convention) - `UserService`, `UserRepository`
+- **Implementation naming**: Suffix pattern - `UserServiceImpl`, `DrizzleUserRepository`
+- **DI Strategy**: Manual injection via tRPC context (no framework needed at current scale)
+- **Interface design**: Arrow function properties for strict type safety
+  - `getUsersPaginated: (params: PaginationParams) => Promise<PaginatedUsers>`
+  - **Why**: Method syntax in interfaces uses bivariant checking (less strict, can lead to type unsoundness)
+  - **Arrow functions**: Use contravariant checking (more strict, prevents parameter type issues)
+  - **TypeScript variance**: Bivariant allows both input/output variance, contravariant only allows safe input variance
+- **Implementation pattern**: Arrow function methods to prevent `this` binding issues
+  - `getUsersPaginated = async (params: PaginationParams) => { /* implementation */ }`
+  - **Prevents**: Loss of `this` context when methods passed as callbacks in tRPC middleware
+- **Justification**:
+  - **Memory efficiency**: Classes share methods via prototype (better for per-request tRPC context)
+  - **Future-proof**: Essential for Clean Architecture/DDD/Event-driven evolution (70%+ probability)
+  - **Type safety**: Arrow function interfaces prevent TypeScript method variance unsoundness
+  - **Runtime safety**: Arrow function implementations prevent `this` binding issues
+  - **Community standards**: Follows TypeScript expert recommendations for critical libraries
+  - **Scalability**: Seamless migration to DI frameworks (NestJS/Inversify) if needed (25-30% probability)
+
+**Implementation Tasks**:
+
+- [ ] **Create Repository Layer** (`features/users/user.repository.ts`)
+  - `interface UserRepository` - clean interface name (no 'I' prefix)
+  - `class DrizzleUserRepository implements UserRepository` - concrete implementation
+  - Handle pagination queries and database operations
 - [ ] **Create User Service Layer** (`features/users/user.service.ts`)
-  - Extract database logic from tRPC router
+  - `interface UserService` - service contract
+  - `class UserServiceImpl implements UserService` - business logic implementation
+  - Constructor inject `UserRepository` dependency
   - Implement `getUsersPaginated()` service method
   - Handle data transformation at service boundary
+- [ ] **Update tRPC Context** (`core/api/trpc.ts`)
+  - Manual dependency injection: `new DrizzleUserRepository()` → `new UserServiceImpl(repo)`
+  - Type context as `{ userService: UserService }` (interface type)
   - Clean separation: Router → Service → Repository → Database
-- [ ] **Create Repository Interfaces**
-  - Define abstract repository contracts
-  - Implement concrete Drizzle repositories
-  - Enable dependency injection and testing
-- [ ] **Update tRPC Router**
-  - Remove direct database access from `user.router.ts`
-  - Delegate to service layer
+- [ ] **Update tRPC Router** (`features/users/user.router.ts`)
+  - Remove direct database access
+  - Delegate to `ctx.userService.getUsersPaginated()`
   - Focus on input validation and response formatting
 - [ ] **Remove Runtime DB Parsing**
-  - Database is trusted source - no need for Zod validation
+  - Database is trusted source - no need for Zod validation of DB results
   - Transform at service boundary, not in router
   - Clear data flow: DB → Service (transform) → Router → Client
 
-### 8. tRPC Authentication Context
+### 7. tRPC Authentication Context
 
 **Goal**: Add proper authentication context to tRPC procedures
 
@@ -120,7 +149,7 @@
   - Handle session validation consistently
   - Proper error responses for auth failures
 
-### 9. Improved State Management Contracts
+### 8. Improved State Management Contracts
 
 **Goal**: Clear contracts for loading, error, and data states
 
@@ -132,12 +161,12 @@
   - Consistent loading patterns across hooks
   - Skeleton components for loading states
   - Error boundaries with retry mechanisms
-- [ ] **Type-Safe Global State**
-  - Remove `as unknown as` type assertions
-  - Proper typing for global development utilities
-  - Clear development vs production boundaries
+- [x] **Type-Safe Global State** - SKIPPED (current implementation acceptable)
+  - ~~Remove `as unknown as` type assertions~~
+  - ~~Proper typing for global development utilities~~
+  - ~~Clear development vs production boundaries~~
 
-### 10. Data Transformation Ownership
+### 9. Data Transformation Ownership
 
 **Goal**: Clear ownership of data transformation responsibilities
 
@@ -156,7 +185,7 @@
 
 ## Authentication Configuration
 
-### 3. Configure autoSignIn Behavior
+### 10. Configure autoSignIn Behavior
 
 **Current state**: `autoSignIn: false` in `src/core/auth/index.ts`
 
