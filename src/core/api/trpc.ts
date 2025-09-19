@@ -11,6 +11,8 @@ import superjson from "superjson";
 import { ZodError } from "zod";
 
 import { db } from "~/core/database";
+import { DrizzleUserRepository } from "~/features/users/user.repository";
+import { UserManagementService } from "~/features/users/user-management.service";
 
 /**
  * 1. CONTEXT
@@ -25,8 +27,22 @@ import { db } from "~/core/database";
  * @see https://trpc.io/docs/server/context
  */
 export async function createTRPCContext(opts: { headers: Headers }) {
+  // TODO: introduce create service context
+  /**
+   * Repositories
+   */
+  const userRepository = new DrizzleUserRepository(db);
+
+  /**
+   * Services
+   */
+  const userManagementService = new UserManagementService(userRepository);
+
   return {
     db,
+    services: {
+      userManagementService,
+    },
     ...opts,
   };
 }

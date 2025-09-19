@@ -89,7 +89,7 @@
 
 - **Pattern**: Class-based services with manual dependency injection
 - **Interface naming**: No 'I' prefix (TypeScript convention) - `UserService`, `UserRepository`
-- **Implementation naming**: Suffix pattern - `UserServiceImpl`, `DrizzleUserRepository`
+- **Implementation naming**: Same-name pattern for services until business justification required, adapter prefix pattern for repositories - `UserService`, `DrizzleUserRepository`
 - **DI Strategy**: Manual injection via tRPC context (no framework needed at current scale)
 - **Interface design**: Arrow function properties for strict type safety
   - `getUsersPaginated: (params: PaginationParams) => Promise<PaginatedUsers>`
@@ -107,30 +107,45 @@
   - **Community standards**: Follows TypeScript expert recommendations for critical libraries
   - **Scalability**: Seamless migration to DI frameworks (NestJS/Inversify) if needed (25-30% probability)
 
-**Implementation Tasks**:
+**Implementation Tasks**: ✅ **COMPLETED**
 
-- [ ] **Create Repository Layer** (`features/users/user.repository.ts`)
+- [x] **Create Pagination Types** (`common/types/pagination.ts`) - _Added during implementation_
+  - `PaginationParams`, `PaginationResponse<T>`, `PaginatedResult<T>` interfaces
+  - Shared types for consistent pagination across layers
+- [x] **Create Repository Layer** (`features/users/user.repository.ts`)
   - `interface UserRepository` - clean interface name (no 'I' prefix)
   - `class DrizzleUserRepository implements UserRepository` - concrete implementation
+  - Constructor inject `DrizzleInstance` dependency (_deviation: added proper DB type_)
   - Handle pagination queries and database operations
-- [ ] **Create User Service Layer** (`features/users/user.service.ts`)
+- [x] **Create User Service Layer** (`features/users/user-management.service.ts`) - _Renamed during implementation_
   - `interface UserService` - service contract
-  - `class UserServiceImpl implements UserService` - business logic implementation
+  - `class UserManagementService implements UserService` (_deviation: avoided unsafe declaration merging_)
   - Constructor inject `UserRepository` dependency
   - Implement `getUsersPaginated()` service method
   - Handle data transformation at service boundary
-- [ ] **Update tRPC Context** (`core/api/trpc.ts`)
-  - Manual dependency injection: `new DrizzleUserRepository()` → `new UserServiceImpl(repo)`
-  - Type context as `{ userService: UserService }` (interface type)
+- [x] **Update Database Types** (`core/database/index.ts`) - _Added during implementation_
+  - Export `DrizzleInstance` type (_deviation: renamed from generic `Database`_)
+  - Follows adapter prefix pattern for technology-specific types
+- [x] **Update tRPC Context** (`core/api/trpc.ts`)
+  - Manual dependency injection: `new DrizzleUserRepository(db)` → `new UserManagementService(repo)`
+  - Type context as `{ services: { userManagementService: UserService } }` (_deviation: wrapped in services object_)
   - Clean separation: Router → Service → Repository → Database
-- [ ] **Update tRPC Router** (`features/users/user.router.ts`)
+- [x] **Update tRPC Router** (`features/users/user.router.ts`)
   - Remove direct database access
-  - Delegate to `ctx.userService.getUsersPaginated()`
+  - Delegate to `ctx.services.userManagementService.getUsersPaginated()` (_deviation: updated path_)
   - Focus on input validation and response formatting
-- [ ] **Remove Runtime DB Parsing**
+- [x] **Remove Runtime DB Parsing**
   - Database is trusted source - no need for Zod validation of DB results
   - Transform at service boundary, not in router
   - Clear data flow: DB → Service (transform) → Router → Client
+
+**Implementation Deviations from Original Plan:**
+
+1. **Service naming**: Used `UserManagementService` instead of `UserService` to avoid TypeScript unsafe declaration merging
+2. **Service organization**: Wrapped services in `ctx.services` object for better scalability
+3. **Database typing**: Created `DrizzleInstance` type instead of generic `Database` for better clarity
+4. **File naming**: Renamed service file to `user-management.service.ts` to match class name
+5. **Additional types**: Created shared pagination types for better type consistency across layers
 
 ### 7. tRPC Authentication Context
 
