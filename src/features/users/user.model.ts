@@ -1,6 +1,7 @@
 import z from "zod";
 
-import { type UserRole, userRoles } from "~/common/types/user-role";
+import type { UserRole } from "~/common/types/user-role";
+import { userRoles } from "~/common/types/user-role";
 
 export const userRoleLabels: Record<UserRole, string> = {
   user: "User",
