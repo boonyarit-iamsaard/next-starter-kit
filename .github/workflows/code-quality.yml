@@ -33,8 +33,13 @@ jobs:
       - name: Setup CI environment
         run: cp .env.ci.example .env
 
-      - name: Run quality checks
-        run: pnpm check
+      - name: Build project
+        run: pnpm build
         env:
           # Skip environment validation for CI - we only need type checking
           SKIP_ENV_VALIDATION: true
+          # Disable Next.js telemetry in CI
+          NEXT_TELEMETRY_DISABLED: 1
+
+      - name: Run quality checks
+        run: pnpm check
