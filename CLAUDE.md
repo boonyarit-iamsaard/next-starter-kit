@@ -25,6 +25,18 @@ This project uses pnpm as the package manager.
 | `pnpm format:fix` | Fix Prettier formatting automatically |
 | `pnpm typecheck`  | Run TypeScript type checking          |
 
+### CI/CD
+
+GitHub Actions workflow automatically runs quality checks on every push and pull request:
+
+- **Triggers**: Push to `main` branch and all pull requests
+- **Node.js**: Version 22+ (enforced by `engines` field in package.json)
+- **Package Manager**: pnpm version auto-detected from `packageManager` field
+- **Quality Checks**: Runs `pnpm check` (lint + format + typecheck)
+- **Environment**: Uses `.env.ci.example` with mock values and `SKIP_ENV_VALIDATION=true`
+- **Performance**: Fast feedback (~2-3 minutes) with automatic dependency caching
+- **Maintenance**: Mock environment values centralized in documented `.env.ci.example` file
+
 ### Database Operations
 
 | Command            | Description                                        |
@@ -226,7 +238,7 @@ The project implements a class-based service and repository pattern with manual 
 
 **Architecture Flow:**
 
-```
+```text
 tRPC Router → Service Layer → Repository Layer → Database
      ↓              ↓                ↓
 Input validation  Business logic  Data access

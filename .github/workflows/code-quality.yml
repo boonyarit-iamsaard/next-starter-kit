@@ -1,0 +1,40 @@
+name: Code Quality
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  quality-checks:
+    name: Quality Checks
+    runs-on: ubuntu-22.04
+    strategy:
+      matrix:
+        node-version: [22]
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Install pnpm
+        uses: pnpm/action-setup@v4
+
+      - name: Setup Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ matrix.node-version }}
+          cache: "pnpm"
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Setup CI environment
+        run: cp .env.ci.example .env
+
+      - name: Run quality checks
+        run: pnpm check
+        env:
+          # Skip environment validation for CI - we only need type checking
+          SKIP_ENV_VALIDATION: true
