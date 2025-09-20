@@ -1,5 +1,6 @@
 import { eq } from "drizzle-orm";
 
+import { userRoles } from "~/common/types/user-role";
 import { auth } from "~/core/auth";
 
 import { user } from "../schema";
@@ -27,7 +28,7 @@ export const createUsersSeeder: SeederFactory = ({ count = 10, db }) => {
         .update(user)
         .set({
           emailVerified: true,
-          role: "admin",
+          role: userRoles.ADMIN,
         })
         .where(eq(user.email, adminEmail));
 
@@ -49,7 +50,7 @@ export const createUsersSeeder: SeederFactory = ({ count = 10, db }) => {
           .update(user)
           .set({
             emailVerified: true,
-            role: "user",
+            role: userRoles.USER,
           })
           .where(eq(user.email, email));
       }

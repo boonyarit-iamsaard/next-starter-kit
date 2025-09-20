@@ -17,7 +17,7 @@ export const user = pgTable("users", (t) => ({
     .$defaultFn(() => false)
     .notNull(),
   image: t.text(),
-  role: userRoleEnum(),
+  role: userRoleEnum().notNull(),
   banned: t
     .boolean()
     .$defaultFn(() => false)

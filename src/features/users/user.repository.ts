@@ -35,7 +35,7 @@ export class DrizzleUserRepository implements UserRepository {
     const total = totalResult[0]?.value ?? 0;
 
     return {
-      items: users as UserModel[],
+      items: users,
       total,
     };
   };
