@@ -5,7 +5,11 @@ import { cn } from "~/common/helpers/cn";
 
 type LoadingSpinnerProps = ComponentProps<"div">;
 
-export function LoadingSpinner({ className, ...props }: LoadingSpinnerProps) {
+export function LoadingSpinner({
+  className,
+  children = "Loading...",
+  ...props
+}: LoadingSpinnerProps) {
   return (
     <div
       className={cn(
@@ -14,9 +18,9 @@ export function LoadingSpinner({ className, ...props }: LoadingSpinnerProps) {
       )}
       {...props}
     >
-      <div className="flex items-center gap-2">
+      <div className="flex items-center gap-2 text-sm">
         <Loader2 className="h-4 w-4 animate-spin" />
-        Loading users...
+        {children}
       </div>
     </div>
   );

@@ -189,6 +189,33 @@
   - ~~Proper typing for global development utilities~~
   - ~~Clear development vs production boundaries~~
 
+### 8.1. Error Message UX & Consistency Improvements
+
+**Goal**: Standardize error display patterns across the application for better user experience
+
+**Current State**: Mixed error handling patterns - auth hooks use local state, admin hooks throw errors, components handle inconsistently
+
+- [ ] **Standardize Error Display Components**
+  - Create reusable error components following shadcn/ui Alert patterns
+  - `ErrorAlert` component with variants (destructive, warning, info)
+  - Include retry functionality where appropriate
+  - Consistent error message formatting and iconography
+- [ ] **Error Message Content Standards**
+  - User-friendly error messages (avoid technical details)
+  - Actionable guidance ("Please try again later" vs specific error codes)
+  - Consistent tone and language across all error states
+  - Internationalization-ready message structure
+- [ ] **Loading & Error State Patterns**
+  - Consistent loading spinner usage (`LoadingSpinner` component)
+  - Standardized error layouts matching loading state dimensions
+  - Proper ARIA labels and accessibility considerations
+  - Graceful degradation for network failures
+- [ ] **Hook Error Handling Consistency**
+  - Align all data-fetching hooks to return `{ data, error, isLoading, isError }` pattern
+  - Remove inconsistencies between auth hooks and admin hooks
+  - Standardize error transformation and user-facing messages
+  - Document error handling patterns in CLAUDE.md
+
 ### 9. ✅ Data Transformation Ownership - COMPLETED
 
 **Goal**: Clear ownership of data transformation responsibilities

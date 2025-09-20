@@ -18,6 +18,12 @@ export const user = pgTable("users", (t) => ({
     .notNull(),
   image: t.text(),
   role: userRoleEnum(),
+  banned: t
+    .boolean()
+    .$defaultFn(() => false)
+    .notNull(),
+  banReason: t.text("ban_reason"),
+  banExpires: t.timestamp("ban_expires", { mode: "date", withTimezone: true }),
   createdAt: t
     .timestamp("created_at", { mode: "date", withTimezone: true })
     .$defaultFn(() => new Date())
@@ -47,6 +53,7 @@ export const session = pgTable("sessions", (t) => ({
     .notNull(),
   ipAddress: t.text("ip_address"),
   userAgent: t.text("user_agent"),
+  impersonatedBy: t.text("impersonated_by"),
   userId: t
     .text("user_id")
     .notNull()

@@ -57,7 +57,7 @@ This is a Next.js 15 starter kit built with the T3 stack pattern, featuring:
 - **Next.js 15** with App Router and React Server Components
 - **tRPC** for type-safe API calls
 - **Drizzle ORM** with PostgreSQL database
-- **Better Auth** for authentication with email/password and OAuth
+- **Better Auth** for authentication with email/password and OAuth (includes admin plugin for user management)
 - **TailwindCSS** for styling
 - **TypeScript** with strict type checking
 
@@ -100,7 +100,9 @@ src/
 │   │       └── use-current-session.ts     # Client-side session hook
 │   └── users/                             # User management domain
 │       ├── user.model.ts                  # Full UserModel with business logic
-│       ├── user.router.ts                 # tRPC routes for users
+│       ├── user.router.ts                 # tRPC routes for users (legacy reference)
+│       ├── hooks/                         # User management hooks
+│       │   └── use-user-list.ts           # Better Auth admin user listing
 │       └── components/                    # User-specific components
 ├── common/                                # Cross-domain shared utilities
 │   ├── types/
@@ -109,6 +111,7 @@ src/
 │   ├── components/
 │   │   ├── ui/                            # Reusable UI components
 │   │   ├── data-table.tsx                 # TanStack Table with pagination
+│   │   ├── loading-spinner.tsx            # Standardized loading component
 │   │   ├── app-shell.tsx                  # Main layout structure
 │   │   └── app-sidebar.tsx                # Navigation sidebar
 │   ├── hooks/                             # Shared custom hooks
@@ -135,6 +138,7 @@ src/
 10. **URL State Management**: Custom `useURLPagination` hook with kebab-case parameters and browser navigation support
 11. **Database Seeding**: Factory-pattern seeder system for test data generation
 12. **Session Management**: Domain-specific session handling with separate SessionUser (lightweight) vs UserModel (full data)
+13. **Hybrid Architecture**: Better Auth admin plugin for user management, tRPC for other business domains
 
 ### Authentication Architecture
 
@@ -177,6 +181,7 @@ The authentication system uses Better Auth with:
 - **Email/Password**: Enabled with 8-128 character password requirements
 - **OAuth**: Google provider configured
 - **Database**: Drizzle adapter with PostgreSQL tables (users, sessions, accounts, verifications)
+- **Admin Plugin**: Provides user management APIs (create, update, delete, ban/unban users)
 - **Session Management**: Cookie-based sessions with Next.js integration
 - **Configuration**: Located in `src/core/auth/index.ts`
 
@@ -197,6 +202,29 @@ The project includes a production-ready `useURLPagination` hook (`src/common/hoo
 - **Automatic validation** and bounds checking with URL correction
 - **Browser navigation support** without breaking SPA behavior
 - **Type-safe** with full TypeScript integration
+
+### User Management Architecture
+
+User management follows a hybrid approach combining Better Auth admin plugin with established patterns:
+
+**Better Auth Integration:**
+
+- `useUserList` hook wraps `authClient.admin.listUsers()` for paginated user retrieval
+- Follows auth hook patterns with `{ data, error, isLoading, isError }` return structure
+- Integrates seamlessly with existing `useURLPagination` for URL state persistence
+- User model validation using Zod schemas at service boundaries
+
+**Error Handling Standards:**
+
+- Consistent loading states using `LoadingSpinner` component with customizable messages
+- Error display using shadcn/ui `Alert` components with user-friendly messaging
+- Pattern: `isLoading` → LoadingSpinner, `isError` → Alert with retry guidance
+
+**Database Schema:**
+
+- Enhanced user table with Better Auth admin fields (`banned`, `banReason`, `banExpires`)
+- Session table includes `impersonatedBy` for admin session management
+- Schema updates applied via `pnpm db:push` for rapid development iteration
 
 ## Architecture Principles
 
@@ -255,13 +283,16 @@ Response format   Transformation   DB queries
 ## Important Notes
 
 - **ALWAYS run `pnpm check` after making any code changes and fix any issues before proceeding**
-- Database schema changes require running `pnpm db:generate` and `pnpm db:push`
+- Database schema changes require running `pnpm db:generate` and `pnpm db:push` (or just `pnpm db:push` for development iteration)
 - Environment variables are strictly validated - check `src/env.ts` for required variables
 - Uses server-only imports where appropriate to prevent client-side execution
 - Database reset script uses dotenvx to load environment variables automatically
 - Authentication follows modern UX/UI standards for terminology and user experience
 - URL parameters should use kebab-case (e.g., `page-size`, `search-term`) for web standards compliance
 - When adding new features, create new domains in `features/` with clear ownership of types and logic
+- User management uses Better Auth admin plugin; use tRPC for other business domains
+- Follow established error handling patterns: LoadingSpinner for loading, Alert for errors
+- Hook naming should follow domain patterns (e.g., `useUserList`, not `useListUsers`)
 
 ## Code Style Guidelines
 

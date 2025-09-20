@@ -15,6 +15,9 @@ export const userModelSchema = z.object({
   emailVerified: z.boolean(),
   image: z.string().nullable(),
   role: z.nativeEnum(userRoles),
+  banned: z.boolean(),
+  banReason: z.string().nullable(),
+  banExpires: z.date().nullable(),
   createdAt: z.date(),
   updatedAt: z.date(),
 });
