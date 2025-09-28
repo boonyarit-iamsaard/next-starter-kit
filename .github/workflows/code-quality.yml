@@ -31,7 +31,7 @@ jobs:
         run: pnpm install --frozen-lockfile
 
       - name: Setup CI environment
-        run: cp .env.ci.example .env
+        run: cp apps/admin/.env.ci.example apps/admin/.env
 
       - name: Build project
         run: pnpm build
