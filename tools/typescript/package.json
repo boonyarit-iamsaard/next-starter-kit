@@ -1,0 +1,11 @@
+{
+  "name": "@next-solution/typescript",
+  "author": {
+    "email": "boonyarit.iamsaard@gmail.com",
+    "name": "Boonyarit Iamsa-ard"
+  },
+  "version": "0.1.0",
+  "publishConfig": {
+    "access": "public"
+  }
+}
