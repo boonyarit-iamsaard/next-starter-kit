@@ -1,73 +1,21 @@
-import { FlatCompat } from "@eslint/eslintrc";
-// @ts-ignore -- no types for this plugin
-import drizzle from "eslint-plugin-drizzle";
-import simpleImportSort from "eslint-plugin-simple-import-sort";
-import tseslint from "typescript-eslint";
+import { baseConfig } from "@next-solution/eslint/base";
+import { drizzleConfig } from "@next-solution/eslint/drizzle";
+import { importSortConfig } from "@next-solution/eslint/import-sort";
+import { nextConfig } from "@next-solution/eslint/next";
 
-const compat = new FlatCompat({
-  baseDirectory: import.meta.dirname,
-});
-
-const config = tseslint.config(
-  {
-    ignores: [".next", "next-env.d.ts"],
-  },
-  ...compat.extends("next/core-web-vitals"),
-  {
-    files: ["**/*.ts", "**/*.tsx"],
-    plugins: {
-      drizzle,
-    },
-    extends: [
-      ...tseslint.configs.recommended,
-      ...tseslint.configs.recommendedTypeChecked,
-      ...tseslint.configs.stylisticTypeChecked,
-    ],
-    rules: {
-      "@typescript-eslint/array-type": "off",
-      "@typescript-eslint/consistent-type-definitions": "off",
-      "@typescript-eslint/consistent-type-imports": [
-        "warn",
-        { prefer: "type-imports", fixStyle: "separate-type-imports" },
-      ],
-      "@typescript-eslint/no-unused-vars": [
-        "warn",
-        { argsIgnorePattern: "^_" },
-      ],
-      "@typescript-eslint/require-await": "off",
-      "@typescript-eslint/no-misused-promises": [
-        "error",
-        { checksVoidReturn: { attributes: false } },
-      ],
-      "drizzle/enforce-delete-with-where": [
-        "error",
-        { drizzleObjectName: ["db", "ctx.db"] },
-      ],
-      "drizzle/enforce-update-with-where": [
-        "error",
-        { drizzleObjectName: ["db", "ctx.db"] },
-      ],
-    },
-  },
-  {
-    plugins: {
-      "simple-import-sort": simpleImportSort,
-    },
-    rules: {
-      "simple-import-sort/imports": "error",
-      "simple-import-sort/exports": "error",
-    },
-  },
-  {
-    linterOptions: {
-      reportUnusedDisableDirectives: true,
-    },
-    languageOptions: {
-      parserOptions: {
-        projectService: true,
-      },
-    },
-  },
-);
+/**
+ * ESLint configuration for the admin app
+ * Composes configurations from @next-solution/eslint:
+ * - Base TypeScript rules
+ * - Next.js specific rules
+ * - Drizzle ORM rules
+ * - Import sorting rules
+ */
+const config = [
+  ...baseConfig,
+  ...nextConfig,
+  ...drizzleConfig,
+  ...importSortConfig,
+];
 
 export default config;

@@ -120,9 +120,9 @@ importers:
       '@dotenvx/dotenvx':
         specifier: ^1.49.0
         version: 1.51.0
-      '@eslint/eslintrc':
-        specifier: ^3.3.1
-        version: 3.3.1
+      '@next-solution/eslint':
+        specifier: workspace:*
+        version: link:../../tools/eslint
       '@next-solution/typescript':
         specifier: workspace:*
         version: link:../../tools/typescript
@@ -147,15 +147,6 @@ importers:
       eslint:
         specifier: ^9.23.0
         version: 9.36.0(jiti@2.6.0)
-      eslint-config-next:
-        specifier: ^15.2.3
-        version: 15.5.4(eslint@9.36.0(jiti@2.6.0))(typescript@5.9.2)
-      eslint-plugin-drizzle:
-        specifier: ^0.2.3
-        version: 0.2.3(eslint@9.36.0(jiti@2.6.0))
-      eslint-plugin-simple-import-sort:
-        specifier: ^12.1.1
-        version: 12.1.1(eslint@9.36.0(jiti@2.6.0))
       lint-staged:
         specifier: ^16.1.5
         version: 16.2.1
@@ -180,6 +171,24 @@ importers:
       typescript:
         specifier: ^5.8.2
         version: 5.9.2
+
+  tools/eslint:
+    dependencies:
+      '@eslint/eslintrc':
+        specifier: ^3.3.1
+        version: 3.3.1
+      eslint:
+        specifier: ^9.23.0
+        version: 9.36.0(jiti@2.6.0)
+      eslint-config-next:
+        specifier: ^15.2.3
+        version: 15.5.4(eslint@9.36.0(jiti@2.6.0))(typescript@5.9.2)
+      eslint-plugin-drizzle:
+        specifier: ^0.2.3
+        version: 0.2.3(eslint@9.36.0(jiti@2.6.0))
+      eslint-plugin-simple-import-sort:
+        specifier: ^12.1.1
+        version: 12.1.1(eslint@9.36.0(jiti@2.6.0))
       typescript-eslint:
         specifier: ^8.27.0
         version: 8.44.1(eslint@9.36.0(jiti@2.6.0))(typescript@5.9.2)

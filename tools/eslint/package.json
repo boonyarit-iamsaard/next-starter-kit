@@ -1,0 +1,25 @@
+{
+  "name": "@next-solution/eslint",
+  "author": {
+    "email": "boonyarit.iamsaard@gmail.com",
+    "name": "Boonyarit Iamsa-ard"
+  },
+  "version": "0.1.0",
+  "type": "module",
+  "exports": {
+    "./base": "./base.js",
+    "./next": "./next.js",
+    "./drizzle": "./drizzle.js",
+    "./import-sort": "./import-sort.js"
+  },
+  "dependencies": {
+    "@eslint/eslintrc": "^3.3.1",
+    "eslint-config-next": "^15.2.3",
+    "eslint-plugin-drizzle": "^0.2.3",
+    "eslint-plugin-simple-import-sort": "^12.1.1",
+    "typescript-eslint": "^8.27.0"
+  },
+  "peerDependencies": {
+    "eslint": "^9.23.0"
+  }
+}
